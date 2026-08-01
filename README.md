@@ -79,15 +79,20 @@ Oba pristupa se uključuju bez menjanja ostatka sajta — samo `.film-visual` bl
 i odgovarajući deo `initIntroAnimation()`.
 
 `prefers-reduced-motion: reduce` je poštovan (CSS sakriva animisane slojeve i prikazuje statičan
-hero, JS ne pokreće GSAP timeline). Na užim ekranima (`max-width: 640px`) scroll-distanca intro
-sekcije je kraća (260vh naspram 380vh) i "sheen" pass preko folije se isključuje na uređajima sa
-`navigator.hardwareConcurrency <= 4` radi održavanja 60fps.
+hero, JS ne pokreće GSAP timeline). Na užim ekranima (`max-width: 640px`) uz
+`navigator.hardwareConcurrency <= 4` (heuristika za slabiji uređaj) GSAP timeline se **uopšte ne
+pokreće** — dodaje se `.no-intro-anim` klasa na `<html>` i sajt pada na isti statičan CSS fallback
+kao `prefers-reduced-motion`, umesto samo "lakše" verzije animacije. Scroll-distanca intro sekcije
+je i dalje kraća na mobilnom (260vh naspram 380vh) za uređaje koji ipak pokreću animaciju.
 
 ## SEO
 
 - Meta title/description/OG tagovi na srpskom u `<head>`
 - JSON-LD `AutoRepair` (podtip `LocalBusiness`) sa placeholder adresom/telefonom/radnim vremenom
 - Semantička struktura (`header/main/section/footer`, `<table>` za poređenje, `<details>` za FAQ)
+- `robots.txt` i `sitemap.xml` u korenu projekta — koriste `https://www.skingard.rs/` kao placeholder
+  domen, isti kao u `<link rel="canonical">` i JSON-LD. Zameniti stvarnim domenom pre lansiranja
+  (pretraga po `skingard.rs` pokazuje sva mesta).
 
 ## Poznata ograničenja / sledeći korak
 

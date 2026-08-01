@@ -24,10 +24,14 @@
     initPricingCalculator();
     initCallbackForm();
 
-    if (gsapAvailable && !prefersReducedMotion) {
+    // On weaker/low-power mobile devices we skip the scrubbed GSAP intro
+    // entirely and fall back to the same static CSS state used for
+    // prefers-reduced-motion (see .no-intro-anim rules in style.css) —
+    // a real "CSS-only" fallback, not just a lighter animation.
+    if (gsapAvailable && !prefersReducedMotion && !isLowPower) {
       initIntroAnimation();
     } else {
-      // No scrubbed intro: show header/sticky CTA immediately.
+      document.documentElement.classList.add("no-intro-anim");
       toggleChrome(true);
     }
   });
@@ -81,7 +85,7 @@
       .to(filmVisual, { opacity: 1, duration: 0.6 }, 0.55)
       .fromTo(filmSweep, { x: -800 }, { x: 0, duration: 2.1 }, 0.9);
 
-    if (!isLowPower && filmSheen) {
+    if (filmSheen) {
       tl.fromTo(filmSheen, { x: -900 }, { x: 950, duration: 1.6 }, 1.3);
     }
 
