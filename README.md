@@ -19,10 +19,13 @@ Otvara se na `http://localhost:5173`. Alternativa bez npm-a: bilo koji statički
 ## Struktura fajlova
 
 ```
-index.html      sve sekcije, SEO meta tagovi, JSON-LD (LocalBusiness/AutoRepair)
-css/style.css   design tokeni (boje, tipografija) + stilovi svih sekcija + responsive
-js/main.js      GSAP intro animacija, sticky CTA, mobilni meni, before/after slider,
-                pricing kalkulator, validacija forme za povratni poziv
+index.html                 sve sekcije, SEO meta tagovi, JSON-LD (LocalBusiness/AutoRepair)
+css/style.css               design tokeni (boje, tipografija) + stilovi svih sekcija + responsive
+js/main.js                  GSAP intro animacija, sticky CTA, mobilni meni, before/after slider,
+                             pricing kalkulator, validacija forme za povratni poziv
+assets/hood-sequence/       100 .webp kadrova prave ugradnje za hero intro (vidi ispod)
+assets/brand/               originalni logo fajlovi (wordmark + pattern), izvor boja/og:image
+robots.txt, sitemap.xml     osnovni SEO fajlovi (placeholder domen skingard.rs)
 ```
 
 ## Šta MORA da se zameni pre lansiranja (`[PLACEHOLDER]`)
@@ -39,8 +42,10 @@ Pretraži projekat po `PLACEHOLDER` (Ctrl+Shift+F) — sve što treba popuniti j
 - **Trajanje ugradnje po paketu** — sekcija `#proces`, FAQ
 - **Recenzije** — sekcija `#recenzije` sadrži demo tekstove za layout, zameniti stvarnim
   recenzijama sa Google/Instagram
-- **Fotografije/video** — svi `.img-placeholder` blokovi i `.ba-img` (before/after slajderi u
-  portfoliju) su namerno CSS placeholderi dok ne dobijemo prave fotografije/video sekvencu
+- **Fotografije/video** — hero intro sekvenca (kapot/blatobran, zavlačenje ivice) je **već prava
+  snimljena ugradnja** (vidi sekciju ispod). Ono što je i dalje CSS placeholder: svi
+  `.img-placeholder` blokovi (problem-sekcija) i `.ba-img` (before/after slajderi u portfoliju) —
+  čekaju prave foto/video materijale
 - **Webhook za lead formu** — `WEBHOOK_URL` u `submitCallbackRequest()` (`js/main.js`).
   Trenutno forma radi front-end validaciju i samo loguje lead u konzolu.
 
@@ -50,33 +55,59 @@ Tokeni su u `css/style.css` na vrhu (`:root`):
 
 ```css
 --skg-black: #0A0A0B;
---skg-magenta: #E6007E;   /* TODO: potvrditi tačan HEX pipetom sa fotografije ambalaže */
---skg-magenta-2: #FF4FB8;
+--skg-magenta: #F188B0;   /* pipetovano sa isporučenog SKINGARD logotipa (wordmark) */
+--skg-magenta-2: #FB76A5; /* pipetovano sa isporučene brend grafike (talasaste linije) */
 --skg-white: #FFFFFF;
---skg-silver: #C9CACC;
+--skg-silver: #B8B8B8;    /* pipetovano sa isporučenog ševron znaka */
 ```
 
-`--skg-magenta` je postavljen na uobičajen "brand magenta" ton kao polazna tačka — kada budu
-dostupne fotografije ambalaže, dovoljno je izmeniti ovu jednu vrednost (i gradient u
-`--skg-gradient`) da se cela stranica ažurira, jer su svi akcenti vezani za promenljive.
+Boje su tačno pipetovane sa `assets/brand/skingard-logo.png` i `skingard-logo-pattern.png`
+(isporučeni logo fajlovi), ne izmišljene. Pošto je brend magenta svetlija/pastelnija nego
+prvobitna pretpostavka, `.btn-primary`, `.chip.is-active` i `.price-badge` koriste **tamni**
+tekst (`--skg-black`) preko gradient pozadine radi kontrasta — beo tekst na ovoj svetlijoj
+roze bi imao slab kontrast.
+
+Logotip (ševron + "SKINGARD" wordmark) se koristi na 3 mesta u `index.html` (header, intro
+reveal, footer) kao inline SVG + stilizovan tekst, ne kao rasterizovana slika — ševron je sada
+siv (`#B8B8B8`), wordmark roze (`var(--skg-magenta)`) sa blagim italic/skew stilom
+(`.brand-word`, `.intro-wordmark`, `.footer-brand span` u `style.css`), po uzoru na isporučeni
+logo. Originalni fajlovi logotipa su sačuvani u `assets/brand/` za dalju upotrebu (npr. brend
+knjiga, štampa) i `og:image`/JSON-LD sada pokazuju na `assets/brand/skingard-logo-pattern.png`.
 
 ## Intro scroll animacija (hero)
 
 `#hero` sekcija je "pinovana" pomoću `position: sticky` (nema potrebe za `ScrollTrigger`
 `pin: true`, jednostavnije i bez layout skokova). `js/main.js` → `initIntroAnimation()` vuče
-GSAP timeline kroz 4 faze: hero tekst → nailazak folije na haubu (SVG + `clip-path`) → zavlačenje
-u uglove (4 "wrap-flap" linije) → blackout → SKINGARD logo.
+GSAP timeline kroz 4 faze: hero tekst → **prava image-sequence snimka ugradnje** (zavlačenje
+folije pod ivicu haube/blatobrana, pa otvaranje haube i pokazivanje čiste ivice) → blackout →
+SKINGARD logo.
 
-Trenutna vizuelizacija haube je SVG placeholder (gradient + linije), ne prava fotografija/video.
-Kada budu dostupni pravi kadrovi ugradnje, dve opcije:
+Sekvenca je prava snimljena ugradnja: `assets/hood-sequence/frame-001.webp` … `frame-100.webp`
+(100 kadrova, izvučeno ffmpeg-om iz 10-sekundnog klipa na 10 fps, širina 440px, `.webp`,
+ukupno ~2.2 MB). Kadrovi se preload-uju eagerno (ne lenjo, za razliku od portfolio slika ispod
+"fold"-a) jer je ovo prva stvar u koju korisnik skroluje. `initIntroAnimation()` crta trenutni
+kadar na `<canvas>` preko `drawFrame()`, indeks kadra je tween-ovan GSAP-om (`frameProxy.i`)
+sinhrono sa scroll progresom (`scrub: 0.4`). Ako korisnik skroluje brže nego što se kadrovi
+stignu učitati, `nearestLoadedFrame()` prikazuje poslednji učitani kadar umesto praznog/pokvarenog
+frejma.
 
-1. **Image sequence** — zameniti `.hood-svg` sa `<canvas>`/`<img>` sekvencom kadrova i menjati
-   `currentFrame` unutar istog `scrub: 0.4` ScrollTrigger-a (najbliže "cinematic" efektu iz brief-a).
-2. **Video sa `currentTime` scrub-om** — postaviti `<video>` i sinhronizovati `video.currentTime`
-   sa progresom ScrollTrigger-a.
+Za `prefers-reduced-motion` i `.no-intro-anim` (slabiji mobilni) canvas se uopšte ne inicijalizuje
+— umesto njega prikazuje se statičan `<img data-film-poster>` (jedan kadar, `frame-070.webp`),
+tako da fallback i dalje ima vizuelni sadržaj, ne samo prazan tekst.
 
-Oba pristupa se uključuju bez menjanja ostatka sajta — samo `.film-visual` blok u `index.html`
-i odgovarajući deo `initIntroAnimation()`.
+Ako se snimi novi/bolji materijal (npr. dva ugla, ili duži klip), zameniti fajlove u
+`assets/hood-sequence/` i po potrebi promeniti `FRAME_COUNT` u `js/main.js` — ostatak logike
+(preload, scrub, fallback) ne treba dirati.
+
+### "Title card" pauza pre otkrivanja sadržaja
+
+Posle sekvence, `blackout` sloj postane potpuno crn i `logo` se pojavi i **miruje** (nema tween-a)
+dok se scroll ne pomeri dalje — tek onda se logo i blackout postepeno gase, otkrivajući čist crn
+ekran, i istog trenutka se `intro-pin-wrap` "otkva\u010di" (unpin) pa sledeća sekcija (trust-bar)
+uđe u prikaz. Efekat: skroluj → animacija → **crn ekran sa logom koji miruje** → gašenje → sadržaj,
+umesto da se logo naglo "izvuče" sa ekrana zajedno sa unpin-ovanjem. Ukupno trajanje `intro-pin-wrap`
+(`460vh` desktop / `320vh` mobilni) je povećano da bi ova pauza imala prostora bez da se skrati
+sama sekvenca oklejanja.
 
 `prefers-reduced-motion: reduce` je poštovan (CSS sakriva animisane slojeve i prikazuje statičan
 hero, JS ne pokreće GSAP timeline). Na užim ekranima (`max-width: 640px`) uz

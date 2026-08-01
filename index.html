@@ -15,14 +15,16 @@
 <meta property="og:title" content="SKINGARD — Zaštita laka od prvog dana | PPF folija Beograd" />
 <meta property="og:description" content="Sopstveni brend PPF folije + licencirani studio u Beogradu. Preciznost, garancija i majstori koji zavlače foliju pod svaku ivicu." />
 <meta property="og:locale" content="sr_RS" />
-<meta property="og:image" content="/assets/og-cover.jpg" />
+<meta property="og:image" content="/assets/brand/skingard-logo-pattern.png" />
 <meta name="twitter:card" content="summary_large_image" />
 
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230A0A0B'/%3E%3Cpolyline points='38,14 20,32 38,50' fill='none' stroke='%23E6007E' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpolyline points='54,14 36,32 54,50' fill='none' stroke='%23E6007E' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230A0A0B'/%3E%3Cpolyline points='38,14 20,32 38,50' fill='none' stroke='%23B8B8B8' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpolyline points='54,14 36,32 54,50' fill='none' stroke='%23B8B8B8' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800;900&amp;family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet" />
+
+<link rel="preload" as="image" href="assets/hood-sequence/frame-001.webp" fetchpriority="high" />
 
 <link rel="stylesheet" href="css/style.css" />
 
@@ -31,7 +33,7 @@
   "@context": "https://schema.org",
   "@type": "AutoRepair",
   "name": "SKINGARD Paint Protection Film Studio",
-  "image": "https://www.skingard.rs/assets/og-cover.jpg",
+  "image": "https://www.skingard.rs/assets/brand/skingard-logo-pattern.png",
   "@id": "https://www.skingard.rs/",
   "url": "https://www.skingard.rs/",
   "telephone": "+381-PLACEHOLDER",
@@ -80,14 +82,8 @@
   <div class="container header-inner">
     <a href="#hero" class="brand" aria-label="SKINGARD — početna">
       <svg class="brand-mark" width="34" height="26" viewBox="0 0 64 48" aria-hidden="true">
-        <polyline points="30,6 10,24 30,42" fill="none" stroke="url(#gradHeader)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-        <polyline points="52,6 32,24 52,42" fill="none" stroke="url(#gradHeader)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-        <defs>
-          <linearGradient id="gradHeader" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stop-color="#E6007E"/>
-            <stop offset="1" stop-color="#FF4FB8"/>
-          </linearGradient>
-        </defs>
+        <polyline points="30,6 10,24 30,42" fill="none" stroke="#B8B8B8" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="52,6 32,24 52,42" fill="none" stroke="#B8B8B8" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
       <span class="brand-word">SKINGARD</span>
     </a>
@@ -151,50 +147,21 @@
       </div>
 
       <div class="film-visual" data-intro-layer="visual" aria-hidden="true">
-        <svg class="hood-svg" viewBox="0 0 800 480" preserveAspectRatio="xMidYMid meet">
-          <defs>
-            <linearGradient id="metalGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stop-color="#3a3a40"/>
-              <stop offset="0.5" stop-color="#17171a"/>
-              <stop offset="1" stop-color="#050506"/>
-            </linearGradient>
-            <linearGradient id="filmGrad" x1="0" y1="0" x2="1" y2="0.3">
-              <stop offset="0" stop-color="#FF6FC2"/>
-              <stop offset="0.45" stop-color="#E6007E"/>
-              <stop offset="1" stop-color="#8A0057"/>
-            </linearGradient>
-            <clipPath id="hoodClip">
-              <path d="M60,260 C60,150 160,60 400,50 C640,60 740,150 740,260 C740,340 640,400 400,420 C160,400 60,340 60,260 Z"/>
-            </clipPath>
-          </defs>
-
-          <path class="hood-base" d="M60,260 C60,150 160,60 400,50 C640,60 740,150 740,260 C740,340 640,400 400,420 C160,400 60,340 60,260 Z" fill="url(#metalGrad)" stroke="rgba(255,255,255,0.12)" stroke-width="2"/>
-
-          <g clip-path="url(#hoodClip)">
-            <rect class="film-sweep" x="-800" y="0" width="800" height="480" fill="url(#filmGrad)"/>
-            <rect class="film-sheen" x="-800" y="0" width="220" height="480" fill="rgba(255,255,255,0.25)" transform="skewX(-18)"/>
-          </g>
-
-          <path class="hood-outline" d="M60,260 C60,150 160,60 400,50 C640,60 740,150 740,260 C740,340 640,400 400,420 C160,400 60,340 60,260 Z" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="2"/>
-
-          <g class="wrap-flap wrap-flap--tl">
-            <path d="M60,260 C60,190 100,120 220,80" fill="none" stroke="url(#filmGrad)" stroke-width="14" stroke-linecap="round"/>
-          </g>
-          <g class="wrap-flap wrap-flap--tr">
-            <path d="M740,260 C740,190 700,120 580,80" fill="none" stroke="url(#filmGrad)" stroke-width="14" stroke-linecap="round"/>
-          </g>
-          <g class="wrap-flap wrap-flap--bl">
-            <path d="M60,260 C60,320 110,370 240,398" fill="none" stroke="url(#filmGrad)" stroke-width="14" stroke-linecap="round"/>
-          </g>
-          <g class="wrap-flap wrap-flap--br">
-            <path d="M740,260 C740,320 690,370 560,398" fill="none" stroke="url(#filmGrad)" stroke-width="14" stroke-linecap="round"/>
-          </g>
-        </svg>
+        <div class="film-frame">
+          <canvas class="film-canvas" data-film-canvas width="440" height="782"></canvas>
+          <img
+            class="film-poster"
+            data-film-poster
+            src="assets/hood-sequence/frame-070.webp"
+            alt="Ugradnja SKINGARD PPF folije — zavlačenje pod ivicu haube"
+            width="440" height="782"
+            loading="eager"
+            decoding="async" />
+        </div>
 
         <p class="visual-caption">
           <span class="dot"></span>
           Folija se zavlači <strong>pod ivicu haube</strong> — nema otvorenih rubova koji prvi otpadaju.
-          <em>[PLACEHOLDER: zameniti stvarnim video/foto sekvencom ugradnje]</em>
         </p>
       </div>
 
@@ -202,14 +169,8 @@
 
       <div class="intro-logo" data-intro-layer="logo" aria-hidden="true">
         <svg width="120" height="90" viewBox="0 0 64 48">
-          <polyline points="30,6 10,24 30,42" fill="none" stroke="url(#gradLogo)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-          <polyline points="52,6 32,24 52,42" fill="none" stroke="url(#gradLogo)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-          <defs>
-            <linearGradient id="gradLogo" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0" stop-color="#E6007E"/>
-              <stop offset="1" stop-color="#FF4FB8"/>
-            </linearGradient>
-          </defs>
+          <polyline points="30,6 10,24 30,42" fill="none" stroke="#B8B8B8" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+          <polyline points="52,6 32,24 52,42" fill="none" stroke="#B8B8B8" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
         <span class="intro-wordmark">SKINGARD</span>
         <span class="intro-tagline">Paint Protection Film</span>
@@ -223,11 +184,11 @@
     <div class="container">
       <ul class="trust-list">
         <li>
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l7 3v6c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V5l7-3z" stroke="currentColor" stroke-width="1.5"/><path d="M9 12l2 2 4-4" stroke="#E6007E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l7 3v6c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V5l7-3z" stroke="currentColor" stroke-width="1.5"/><path d="M9 12l2 2 4-4" stroke="#F188B0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
           <span>Sopstveni brend folije</span>
         </li>
         <li>
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M7 9h6M7 13h4" stroke="#E6007E" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M7 9h6M7 13h4" stroke="#F188B0" stroke-width="1.8" stroke-linecap="round"/></svg>
           <span>Licencirani studio</span>
         </li>
         <li>
@@ -235,7 +196,7 @@
           <span>Sertifikovani majstori</span>
         </li>
         <li>
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v18M4 8h16M4 16h16" stroke="currentColor" stroke-width="1.3"/><circle cx="12" cy="12" r="9" stroke="#E6007E" stroke-width="1.6"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v18M4 8h16M4 16h16" stroke="currentColor" stroke-width="1.3"/><circle cx="12" cy="12" r="9" stroke="#F188B0" stroke-width="1.6"/></svg>
           <span>Produžena garancija</span>
         </li>
       </ul>
@@ -515,19 +476,19 @@
 
       <ul class="warranty-list">
         <li>
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 12l2 2 4-4" stroke="#E6007E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.4"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 12l2 2 4-4" stroke="#F188B0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.4"/></svg>
           <div><strong>Žutilo i gubitak sjaja</strong><p>Ako folija promeni ton ili izgubi sjaj u garantnom periodu — rešavamo o našem trošku.</p></div>
         </li>
         <li>
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 12l2 2 4-4" stroke="#E6007E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.4"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 12l2 2 4-4" stroke="#F188B0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.4"/></svg>
           <div><strong>Delaminacija i ljuštenje ivica</strong><p>Odvajanje folije na ivicama i kromovima je pokriveno — pravilna ugradnja to sprečava, garancija to potvrđuje.</p></div>
         </li>
         <li>
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 12l2 2 4-4" stroke="#E6007E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.4"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 12l2 2 4-4" stroke="#F188B0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.4"/></svg>
           <div><strong>Pucanje i mikro-naprsline</strong><p>Materijalna greška koja dovede do pucanja folije bez udarca spolja je pokrivena garancijom.</p></div>
         </li>
         <li>
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 9v4M12 16h.01" stroke="#E6007E" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.4"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 9v4M12 16h.01" stroke="#F188B0" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.4"/></svg>
           <div><strong>Uslov za garanciju</strong><p>Redovno održavanje bez abrazivnih hemikalija — <em>[PLACEHOLDER: precizirati kompletne uslove garancije]</em>.</p></div>
         </li>
       </ul>
@@ -789,8 +750,8 @@
   <div class="container footer-inner">
     <div class="footer-brand">
       <svg width="28" height="21" viewBox="0 0 64 48" aria-hidden="true">
-        <polyline points="30,6 10,24 30,42" fill="none" stroke="#E6007E" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-        <polyline points="52,6 32,24 52,42" fill="none" stroke="#E6007E" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="30,6 10,24 30,42" fill="none" stroke="#B8B8B8" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="52,6 32,24 52,42" fill="none" stroke="#B8B8B8" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
       <span>SKINGARD</span>
       <small>Paint Protection Film · Beograd</small>

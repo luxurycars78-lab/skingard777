@@ -48,20 +48,84 @@
 
   /* ---------------------------------------------------------
      Intro scroll animation (GSAP + ScrollTrigger)
+
+     The hood-corner sequence is real footage of a SKINGARD install
+     (assets/hood-sequence/frame-001..100.webp, extracted @10fps from a
+     10s clip), scrubbed frame-by-frame against scroll progress via
+     <canvas> — the same "image sequence" technique used for product-
+     reveal scroll sites. Frames are preloaded eagerly (unlike the
+     below-the-fold portfolio images) because this sequence is the
+     first thing the user scrolls into, right after the hero copy.
   --------------------------------------------------------- */
+  var FRAME_COUNT = 100;
+  var FRAME_PATH = function (i) {
+    return "assets/hood-sequence/frame-" + String(i + 1).padStart(3, "0") + ".webp";
+  };
+
   function initIntroAnimation() {
     var introWrap = document.querySelector(".intro-pin-wrap");
-    if (!introWrap) return;
+    var canvas = document.querySelector("[data-film-canvas]");
+    if (!introWrap || !canvas) return;
 
     var heroCopy = document.querySelector('[data-intro-layer="hero"]');
     var filmVisual = document.querySelector('[data-intro-layer="visual"]');
     var blackout = document.querySelector('[data-intro-layer="blackout"]');
     var logo = document.querySelector('[data-intro-layer="logo"]');
-    var filmSweep = document.querySelector(".film-sweep");
-    var filmSheen = document.querySelector(".film-sheen");
-    var wrapFlaps = document.querySelectorAll(".wrap-flap");
-    var wrapFlapPaths = document.querySelectorAll(".wrap-flap path");
     var visualCaption = document.querySelector(".visual-caption");
+    var ctx = canvas.getContext("2d");
+
+    var frames = [];
+    var framesLoaded = [];
+    var currentFrame = 0;
+
+    function sizeCanvas() {
+      var rect = canvas.getBoundingClientRect();
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.max(1, Math.round(rect.width * dpr));
+      canvas.height = Math.max(1, Math.round(rect.height * dpr));
+    }
+
+    function nearestLoadedFrame(idx) {
+      for (var i = Math.max(0, Math.min(idx, FRAME_COUNT - 1)); i >= 0; i--) {
+        if (framesLoaded[i]) return i;
+      }
+      return -1;
+    }
+
+    function drawFrame(idx) {
+      currentFrame = idx;
+      var found = nearestLoadedFrame(Math.round(idx));
+      if (found === -1 || !canvas.width) return;
+      ctx.drawImage(frames[found], 0, 0, canvas.width, canvas.height);
+    }
+
+    function preloadFrames() {
+      for (var i = 0; i < FRAME_COUNT; i++) {
+        var img = new Image();
+        img.decoding = "async";
+        if (i === 0 && "fetchPriority" in img) img.fetchPriority = "high";
+        img.onload = (function (idx) {
+          return function () {
+            framesLoaded[idx] = true;
+            if (idx === 0) drawFrame(0);
+          };
+        })(i);
+        img.src = FRAME_PATH(i);
+        frames.push(img);
+      }
+    }
+
+    sizeCanvas();
+    preloadFrames();
+
+    var resizeTimer;
+    window.addEventListener("resize", function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function () {
+        sizeCanvas();
+        drawFrame(currentFrame);
+      }, 150);
+    });
 
     gsap.registerPlugin(ScrollTrigger);
 
@@ -69,7 +133,8 @@
     gsap.set(blackout, { opacity: 0 });
     gsap.set(logo, { opacity: 0, scale: 0.92 });
     gsap.set(visualCaption, { opacity: 0 });
-    gsap.set(wrapFlaps, { opacity: 0 });
+
+    var frameProxy = { i: 0 };
 
     var tl = gsap.timeline({
       defaults: { ease: "none" },
@@ -83,19 +148,22 @@
 
     tl.to(heroCopy, { opacity: 0, y: -40, duration: 1 }, 0)
       .to(filmVisual, { opacity: 1, duration: 0.6 }, 0.55)
-      .fromTo(filmSweep, { x: -800 }, { x: 0, duration: 2.1 }, 0.9);
-
-    if (filmSheen) {
-      tl.fromTo(filmSheen, { x: -900 }, { x: 950, duration: 1.6 }, 1.3);
-    }
-
-    tl.to(wrapFlaps, { opacity: 1, stagger: 0.14, duration: 0.35 }, 2.5)
-      .to(wrapFlapPaths, { strokeDashoffset: 0, stagger: 0.14, duration: 0.5 }, 2.5)
-      .to(visualCaption, { opacity: 1, duration: 0.4 }, 2.9)
+      .to(visualCaption, { opacity: 1, duration: 0.4 }, 0.9)
+      .to(frameProxy, {
+        i: FRAME_COUNT - 1,
+        duration: 3.1,
+        onUpdate: function () { drawFrame(frameProxy.i); },
+      }, 0.9)
       .to(filmVisual, { opacity: 0, duration: 0.5 }, 4.0)
       .to(blackout, { opacity: 1, duration: 0.6 }, 3.75)
       .fromTo(logo, { opacity: 0, scale: 0.92 }, { opacity: 1, scale: 1, duration: 0.8, ease: "power2.out" }, 4.5)
-      .to(logo, { opacity: 1, duration: 0.6 }, 5.3);
+      .to(logo, { opacity: 1, duration: 0.6 }, 5.3)
+      // Hold: logo sits alone on a fully black screen from ~5.9 to 6.6 (no
+      // tweens run here) before it dissolves back to black — the "brand
+      // title card" beat — and only once the screen is black again does the
+      // pin release and the next section (trust bar) scroll into view.
+      .to(logo, { opacity: 0, duration: 0.5 }, 6.6)
+      .to(blackout, { opacity: 0, duration: 0.6 }, 6.7);
 
     ScrollTrigger.create({
       trigger: introWrap,
