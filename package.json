@@ -5,7 +5,9 @@
   "private": true,
   "scripts": {
     "dev": "npx --yes serve . -l 5173",
-    "start": "npx --yes serve . -l 5173"
+    "start": "npx --yes serve . -l 5173",
+    "films": "node download-films.js",
+    "palette": "node build-palette.js"
   },
   "dependencies": {},
   "notes": {

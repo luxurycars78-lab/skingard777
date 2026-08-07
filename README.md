@@ -26,26 +26,70 @@ js/main.js                  GSAP intro animacija, sticky CTA, mobilni meni, befo
 assets/hood-sequence/       100 .webp kadrova prave ugradnje za hero intro (vidi ispod)
 assets/brand/               originalni logo fajlovi (wordmark + pattern), izvor boja/og:image
 robots.txt, sitemap.xml     osnovni SEO fajlovi (placeholder domen skingard.rs)
+films.json                  katalog TPU folija (sku, naziv, kategorija, izvorni URL fotografije)
+js/films-data.js            isti katalog kao films.json, samo kao `window.FILMS_DATA` (trenutno
+                             nije učitan ni na jednoj stranici — mrtav kod, drži se u sync-u sa
+                             films.json za slučaj da zatreba runtime pristup podacima)
+download-films.js           `npm run films` — skida fotografije uzoraka (po `sourceUrl`)
+build-palette.js            `npm run palette` — generiše sekciju #paleta na folija-u-boji.html iz films.json
 ```
+
+### Paleta boja (`#paleta` na `folija-u-boji.html`)
+
+Čipovi filtera i kartice uzoraka se **ne uređuju ručno** — generišu se iz `films.json`:
+
+```bash
+npm run films      # skida fotografije po sourceUrl-u (preskače stavke bez njega/postojeće fajlove)
+npm run palette    # upisuje markup između `palette-chips:`/`palette-cards:` markera
+```
+
+Kartice se peku u HTML, a ne dovlače fetch-om, jer `initColorPaletteFilter()` u `js/main.js`
+čita `[data-palette-item]` samo jednom na `DOMContentLoaded` — sve ubačeno posle toga bi bilo
+nevidljivo i za filter i za pretraživače. Mapiranje kategorija (`Glossy` → `Standardne boje`
+itd.) je na vrhu `build-palette.js`.
+
+**Trenutni katalog (183 TPU uzorka, `T001`–`T183`) nema `sourceUrl`** — to je poseban
+proizvod (TPU hameleon/color-shift folije), uzorci potiču iz skeniranog kataloga dobavljača,
+ne sa javno dostupnog sajta sa fotografijama. `npm run films` će ih sve preskočiti
+(`[skip] ... no photo on source site`). Da bi se slike stvarno prikazale na sajtu:
+
+1. Ubaci prave fotografije uzoraka u `images/tpu-films/`, nazvane tačno kao u `localImage`
+   iz `films.json` (npr. `T001.jpg`, `T002.jpg`, ...).
+2. Pokreni `npm run palette` opet da markup ostane u sync-u (nije obavezno — putanje se
+   ne menjaju, samo se slike pojavljuju kad fajlovi postoje).
+
+Do tada su `<img>` tagovi u `#paleta` sekciji tehnički "bez fotografije" (404) — ovo je
+namerno privremeno stanje dok se pravi uzorci ne dostave, isto kao ostali `[PLACEHOLDER]`
+delovi sajta.
 
 ## Šta MORA da se zameni pre lansiranja (`[PLACEHOLDER]`)
 
 Pretraži projekat po `PLACEHOLDER` (Ctrl+Shift+F) — sve što treba popuniti je obeleženo:
 
-- **Telefon** — `tel:+381PLACEHOLDER` (header, sticky CTA, kontakt sekcija, JSON-LD)
-- **Viber / WhatsApp / Instagram** — linkovi u header-u, sticky CTA-u, kontakt sekciji, footeru
-  i `js/main.js` (`WHATSAPP_NUMBER` u `initPricingCalculator()`)
-- **Adresa studija** — kontakt sekcija + JSON-LD `address` + Google Maps embed (`src` iframe-a)
-- **Radno vreme** — kontakt sekcija + JSON-LD `openingHoursSpecification`
-- **Cene paketa** — sekcija `#cene` (namerno nisu izmišljeni brojevi — piše `[PLACEHOLDER RSD]`)
+- **Telefon** — popunjeno: `+381 65 3704426` (header, sticky CTA, kontakt sekcija, JSON-LD).
+  Isti broj se koristi i za Viber (`viber://chat?number=%2B381653704426`) i WhatsApp
+  (`wa.me/381653704426`, `WHATSAPP_NUMBER` u `js/main.js`)
+- **Instagram** — popunjeno: `https://www.instagram.com/skingardfilms` (footer, kontakt sekcija, JSON-LD `sameAs`)
+- **Adresa studija** — popunjeno: `Ljutice Bogdana 42, Beograd` (kontakt sekcija na sve 3 stranice +
+  JSON-LD `address`/`geo` + Google Maps embed i klikabilni link ka Google Maps). Mapa trenutno
+  pinuje adresu preko generičkog `?q=` upita — kad SKINGARD studio bude registrovan kao organizacija
+  na Google Business/Maps, zameniti taj upit imenom/linkom organizacije (obeleženo `[TODO]` iznad
+  `.map-embed` bloka u svakom HTML fajlu) da tačka na mapi prikazuje organizaciju umesto same adrese.
+- **Radno vreme** — popunjeno: Pon–Sub 10:00–19:00, poseta samo po prethodnom zakazivanju
+  (kontakt sekcija na sve 3 stranice + JSON-LD `openingHoursSpecification`)
+- **Cene paketa** — popunjeno u EUR: Prednji paket od 1.200€ / 1.350€ / 1.500€ (malo/srednje/veliko vozilo),
+  Full Body od 3.000€ / 3.300€ / 3.500€, Satin/Color change od 3.200€ / 3.500€ / 3.800€
+  (sekcija `#cene` + kalkulator `PRICE_MATRIX` u `js/main.js` + statična cena na `folija-u-boji.html`)
 - **Uslovi i trajanje garancije** — sekcija `#garancija`
 - **Trajanje ugradnje po paketu** — sekcija `#proces`, FAQ
-- **Recenzije** — sekcija `#recenzije` sadrži demo tekstove za layout, zameniti stvarnim
-  recenzijama sa Google/Instagram
+- **Recenzije** — sekcija je uklonjena (nije postojala nijedna prava recenzija, izmišljeni
+  primeri su smatrani rizikom od nedozvoljene reklame). Vratiti je kad budu dostupne stvarne
+  recenzije sa Google/Instagram profila studija.
 - **Fotografije/video** — hero intro sekvenca (kapot/blatobran, zavlačenje ivice) je **već prava
   snimljena ugradnja** (vidi sekciju ispod). Ono što je i dalje CSS placeholder: svi
   `.img-placeholder` blokovi (problem-sekcija) i `.ba-img` (before/after slajderi u portfoliju) —
-  čekaju prave foto/video materijale
+  čekaju prave foto/video materijale. Paleta boja (`#paleta`) je popunjena pravim fotografijama
+  uzoraka; bez fotografije su ostala samo dva SKU-a (`SD107`, `SD402`) — vidi sekciju o paleti
 - **Webhook za lead formu** — `WEBHOOK_URL` u `submitCallbackRequest()` (`js/main.js`).
   Trenutno forma radi front-end validaciju i samo loguje lead u konzolu.
 
@@ -119,7 +163,7 @@ je i dalje kraća na mobilnom (260vh naspram 380vh) za uređaje koji ipak pokre�
 ## SEO
 
 - Meta title/description/OG tagovi na srpskom u `<head>`
-- JSON-LD `AutoRepair` (podtip `LocalBusiness`) sa placeholder adresom/telefonom/radnim vremenom
+- JSON-LD `AutoRepair` (podtip `LocalBusiness`) sa popunjenom adresom/telefonom/radnim vremenom
 - Semantička struktura (`header/main/section/footer`, `<table>` za poređenje, `<details>` za FAQ)
 - `robots.txt` i `sitemap.xml` u korenu projekta — koriste `https://www.skingard.rs/` kao placeholder
   domen, isti kao u `<link rel="canonical">` i JSON-LD. Zameniti stvarnim domenom pre lansiranja
@@ -128,5 +172,6 @@ je i dalje kraća na mobilnom (260vh naspram 380vh) za uređaje koji ipak pokre�
 ## Poznata ograničenja / sledeći korak
 
 - Forma za povratni poziv nema pravi backend — pogledati `submitCallbackRequest()` u `js/main.js`.
-- Google Maps iframe koristi generički upit "Novi Beograd" dok ne dobijemo tačnu adresu.
+- Google Maps iframe koristi upit sa tačnom adresom (`Ljutice Bogdana 42, Beograd`); zameniti
+  organizacijom kad bude registrovana na Google Business/Maps.
 - Sve slike/video su CSS placeholderi — nema fabrikovanih "stock" fotografija automobila.
