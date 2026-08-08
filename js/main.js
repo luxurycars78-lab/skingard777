@@ -36,6 +36,7 @@
     initWholesaleForm();
     initStickyCtaOverlapGuard();
     initConversionTracking();
+    initCookieConsent();
 
     // On weaker/low-power mobile devices we skip the scrubbed GSAP intro
     // entirely and fall back to the same static CSS state used for
@@ -1048,6 +1049,121 @@
         pushDataLayerEvent({ event: "phone_click", link_url: href });
       }
     });
+  }
+
+  /* ---------------------------------------------------------
+     Cookie consent banner + Google Consent Mode v2.
+
+     Gate is real, not cosmetic: the <head> of every page sets
+     analytics_storage/ad_storage/ad_user_data/ad_personalization to
+     "denied" by default BEFORE the GTM snippet loads. This function only
+     flips that state to "granted" once the visitor actively accepts —
+     GTM/GA4/Ads tags configured to respect Consent Mode stay limited
+     until then. Choice is remembered in localStorage so the banner does
+     not resurface on later visits.
+  --------------------------------------------------------- */
+  function initCookieConsent() {
+    var STORAGE_KEY = "skingard_cookie_consent"; // 'granted' | 'denied'
+    var banner = document.getElementById("cookieBanner");
+    var modal = document.getElementById("cookieModal");
+    if (!banner) return;
+
+    var analyticsCheckbox = document.getElementById("cookieAnalytics");
+    var saved = null;
+    try {
+      saved = localStorage.getItem(STORAGE_KEY);
+    } catch (e) {
+      // localStorage unavailable (e.g. private mode edge cases) — banner
+      // will simply show again next visit instead of throwing.
+    }
+
+    function applyConsent(status) {
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      var value = status === "granted" ? "granted" : "denied";
+      gtag("consent", "update", {
+        analytics_storage: value,
+        ad_storage: value,
+        ad_user_data: value,
+        ad_personalization: value,
+      });
+      try {
+        localStorage.setItem(STORAGE_KEY, status);
+      } catch (e) {}
+    }
+
+    function hideBanner() {
+      banner.style.display = "none";
+    }
+
+    function showBanner() {
+      banner.style.display = "flex";
+    }
+
+    function openModal() {
+      if (!modal) return;
+      if (analyticsCheckbox) analyticsCheckbox.checked = saved !== "denied";
+      modal.hidden = false;
+    }
+
+    function closeModal() {
+      if (modal) modal.hidden = true;
+    }
+
+    if (saved === "granted" || saved === "denied") {
+      hideBanner();
+    } else {
+      showBanner();
+    }
+
+    var acceptBtn = document.getElementById("cookieAccept");
+    var declineBtn = document.getElementById("cookieDecline");
+    var settingsBtn = document.getElementById("cookieSettings");
+    var modalCloseBtn = document.getElementById("cookieModalClose");
+    var modalSaveBtn = document.getElementById("cookieModalSave");
+
+    if (acceptBtn) {
+      acceptBtn.addEventListener("click", function () {
+        saved = "granted";
+        applyConsent("granted");
+        hideBanner();
+      });
+    }
+
+    if (declineBtn) {
+      declineBtn.addEventListener("click", function () {
+        saved = "denied";
+        applyConsent("denied");
+        hideBanner();
+      });
+    }
+
+    if (settingsBtn) {
+      settingsBtn.addEventListener("click", openModal);
+    }
+
+    if (modalCloseBtn) {
+      modalCloseBtn.addEventListener("click", closeModal);
+    }
+
+    if (modal) {
+      modal.addEventListener("click", function (e) {
+        if (e.target === modal) closeModal();
+      });
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && !modal.hidden) closeModal();
+      });
+    }
+
+    if (modalSaveBtn) {
+      modalSaveBtn.addEventListener("click", function () {
+        var analyticsOn = analyticsCheckbox ? analyticsCheckbox.checked : false;
+        saved = analyticsOn ? "granted" : "denied";
+        applyConsent(saved);
+        closeModal();
+        hideBanner();
+      });
+    }
   }
 
   /* ---------------------------------------------------------

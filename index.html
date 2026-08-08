@@ -4,6 +4,18 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 
+<!-- Consent Mode v2 — default state (denied) BEFORE GTM loads -->
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+  gtag('consent', 'default', {
+    'analytics_storage': 'denied',
+    'ad_storage': 'denied',
+    'ad_user_data': 'denied',
+    'ad_personalization': 'denied'
+  });
+</script>
+
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -699,18 +711,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       </div>
 
-      <div class="video-lightbox" data-video-lightbox hidden role="dialog" aria-modal="true" aria-label="Uvećani prikaz videa">
-        <div class="video-lightbox-backdrop" data-video-lightbox-close></div>
-        <div class="video-lightbox-inner">
-          <button type="button" class="video-lightbox-close" data-video-lightbox-close aria-label="Zatvori video">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6L18 18M18 6L6 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
-            <span>Zatvori</span>
-          </button>
-          <video class="video-lightbox-el" data-video-lightbox-el controls playsinline></video>
-          <p class="video-lightbox-caption" data-video-lightbox-caption></p>
-        </div>
-      </div>
-
       <div class="micro-cta">
         <p>Želiš da vidiš kako folija štiti baš tvoj auto?</p>
         <a href="#kontakt" class="btn btn-outline">Zakaži dijagnostiku</a>
@@ -910,6 +910,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <a class="channel-btn channel-btn--viber" href="viber://chat?number=%2B381653704426" aria-label="Viber">Viber</a>
           <a class="channel-btn channel-btn--whatsapp" href="https://wa.me/381653704426" target="_blank" rel="noopener" aria-label="WhatsApp">WhatsApp</a>
           <a class="channel-btn channel-btn--instagram" href="https://www.instagram.com/skingardfilms?igsh=NWNqdm5nNTd5N3l2" target="_blank" rel="noopener" aria-label="Instagram Direct">Instagram</a>
+          <a class="channel-btn channel-btn--email" href="mailto:skingardfilms@gmail.com" aria-label="Email">Email</a>
         </div>
 
         <!-- [TODO] Kada SKINGARD studio bude registrovan kao organizacija na Google Business/Maps, zameniti query ispod (adresa) linkom/imenom organizacije da se tačka na mapi prikazuje kao SKINGARD, ne samo kao adresa. -->
@@ -952,6 +953,23 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </div>
     </div>
   </section>
+
+  <!-- Lightbox lives outside any [data-reveal] section: those get
+       transform: translateY(0) once visible, which (even at 0px) creates a
+       new containing block for position:fixed descendants — the lightbox
+       would center itself against the section's box instead of the
+       viewport, landing off-screen/low instead of centered. -->
+  <div class="video-lightbox" data-video-lightbox hidden role="dialog" aria-modal="true" aria-label="Uvećani prikaz videa">
+    <div class="video-lightbox-backdrop" data-video-lightbox-close></div>
+    <div class="video-lightbox-inner">
+      <button type="button" class="video-lightbox-close" data-video-lightbox-close aria-label="Zatvori video">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6L18 18M18 6L6 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+        <span>Zatvori</span>
+      </button>
+      <video class="video-lightbox-el" data-video-lightbox-el controls playsinline></video>
+      <p class="video-lightbox-caption" data-video-lightbox-caption></p>
+    </div>
+  </div>
 
 </main>
 
@@ -996,6 +1014,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <a href="#cene">Cene</a>
       <a href="#faq">FAQ</a>
       <a href="#kontakt">Kontakt</a>
+      <a href="politika-privatnosti.html">Politika privatnosti</a>
     </nav>
 
     <div class="footer-social">
@@ -1012,5 +1031,36 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/ScrollTrigger.min.js"></script>
 <script src="js/main.js" defer></script>
+
+<!-- ===================== COOKIE CONSENT ===================== -->
+<div class="cookie-banner" id="cookieBanner" role="dialog" aria-live="polite">
+  <div class="cookie-banner__text">
+    Koristimo kolačiće da bismo poboljšali vaše iskustvo na sajtu i merili efikasnost oglasa. Detalje možete pročitati u
+    <a href="/politika-privatnosti.html">Politici privatnosti</a>.
+  </div>
+  <div class="cookie-banner__actions">
+    <button type="button" class="btn btn-ghost" id="cookieDecline">Odbij</button>
+    <button type="button" class="btn btn-ghost" id="cookieSettings">Podešavanja</button>
+    <button type="button" class="btn btn-primary" id="cookieAccept">Prihvati sve</button>
+  </div>
+</div>
+
+<div class="cookie-modal" id="cookieModal" hidden>
+  <div class="cookie-modal__box">
+    <h3>Podešavanja kolačića</h3>
+    <label class="cookie-modal__row">
+      <input type="checkbox" checked disabled>
+      Neophodni kolačići (uvek aktivni — sajt ne radi bez njih)
+    </label>
+    <label class="cookie-modal__row">
+      <input type="checkbox" id="cookieAnalytics" checked>
+      Analitika i merenje oglasa (GTM, Google Ads, Meta)
+    </label>
+    <div class="cookie-modal__actions">
+      <button type="button" class="btn btn-ghost" id="cookieModalClose">Otkaži</button>
+      <button type="button" class="btn btn-primary" id="cookieModalSave">Sačuvaj izbor</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
