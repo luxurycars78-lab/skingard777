@@ -1079,7 +1079,7 @@
       // will simply show again next visit instead of throwing.
     }
 
-    function applyConsent(status) {
+    function applyConsent(status, persist) {
       window.dataLayer = window.dataLayer || [];
       function gtag() { dataLayer.push(arguments); }
       var value = status === "granted" ? "granted" : "denied";
@@ -1089,9 +1089,11 @@
         ad_user_data: value,
         ad_personalization: value,
       });
-      try {
-        localStorage.setItem(STORAGE_KEY, status);
-      } catch (e) {}
+      if (persist !== false) {
+        try {
+          localStorage.setItem(STORAGE_KEY, status);
+        } catch (e) {}
+      }
     }
 
     function hideBanner() {
@@ -1113,6 +1115,12 @@
     }
 
     if (saved === "granted" || saved === "denied") {
+      // Reassert the stored choice as an explicit consent update on every
+      // page load (not just a hidden banner) — the <head> default already
+      // seeds the right state before GTM loads, but this is a belt-and-
+      // braces re-send per Google's guidance so tags never end up stuck
+      // on "denied" if a page's inline default block is ever missed.
+      applyConsent(saved, false);
       hideBanner();
     } else {
       showBanner();
