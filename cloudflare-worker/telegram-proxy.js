@@ -18,12 +18,6 @@
  * upiši u js/main.js kao TELEGRAM_PROXY_URL.
  */
 
-var ALLOWED_ORIGINS = [
-  "https://skingard.rs",
-  "https://www.skingard.rs",
-  "http://localhost:5173",
-];
-
 export default {
   async fetch(request, env) {
     if (request.method === "OPTIONS") {
@@ -76,13 +70,17 @@ export default {
   },
 };
 
+/**
+ * CORS je namerno otvoren (*) — chat_id je fiksiran server-side kao secret,
+ * pa čak i sajt sa drugog origin-a može najviše da pošalje lead u TVOJ
+ * chat, ne da pročita ili preusmeri bilo šta. Restrikcija po origin-u bi
+ * i dalje bila zaobiđena direktnim curl/server-side pozivom, pa ne pruža
+ * realnu zaštitu — samo je izvor CORS grešaka kad se sajt testira sa
+ * file://, drugog hosting preview-a itd.
+ */
 function withCors(request, response) {
-  var origin = request.headers.get("Origin");
   var headers = new Headers(response.headers);
-  if (origin && ALLOWED_ORIGINS.indexOf(origin) !== -1) {
-    headers.set("Access-Control-Allow-Origin", origin);
-    headers.set("Vary", "Origin");
-  }
+  headers.set("Access-Control-Allow-Origin", "*");
   headers.set("Access-Control-Allow-Methods", "POST, OPTIONS");
   headers.set("Access-Control-Allow-Headers", "Content-Type");
   return new Response(response.body, { status: response.status, headers: headers });
