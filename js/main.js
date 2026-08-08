@@ -796,27 +796,51 @@
     });
   }
 
-  /**
-   * [PLACEHOLDER] Integracija sa CRM / Telegram botom.
-   * Trenutno nema backend endpoint-a — zameniti WEBHOOK_URL
-   * i ukloniti simulirani resolve() kada webhook bude spreman.
-   */
-  function submitCallbackRequest(payload) {
-    var WEBHOOK_URL = ""; // [PLACEHOLDER] npr. https://api.skingard.rs/leads
+  /* ---------------------------------------------------------
+     Telegram integracija: šalje lead u Telegram chat preko
+     Cloudflare Worker proxy-ja (cloudflare-worker/telegram-proxy.js).
+     Bot token i chat_id žive samo na Worker-u kao secrets, nikad
+     u ovom fajlu — sajt je frontend-only pa nema drugo mesto koje
+     bi ih sakrilo.
 
-    if (!WEBHOOK_URL) {
-      console.info("[SKINGARD] Callback lead (webhook nije podešen):", payload);
+     Podešavanje (jednom):
+     1) cd cloudflare-worker && wrangler deploy
+     2) wrangler secret put TELEGRAM_BOT_TOKEN
+     3) wrangler secret put TELEGRAM_CHAT_ID
+     4) Upiši dobijeni *.workers.dev URL ispod u TELEGRAM_PROXY_URL.
+  --------------------------------------------------------- */
+  var TELEGRAM_PROXY_URL = ""; // [PLACEHOLDER] npr. "https://skingard-telegram-proxy.<subdomain>.workers.dev"
+
+  function escapeHtml(value) {
+    return String(value == null ? "" : value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+  }
+
+  function sendTelegramMessage(text) {
+    if (!TELEGRAM_PROXY_URL) {
+      console.info("[SKINGARD] Telegram proxy nije podešen, lead:\n" + text);
       return Promise.resolve();
     }
 
-    return fetch(WEBHOOK_URL, {
+    return fetch(TELEGRAM_PROXY_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+      body: JSON.stringify({ text: text }),
     }).then(function (res) {
-      if (!res.ok) throw new Error("Bad response");
+      if (!res.ok) throw new Error("Telegram proxy error");
       return res.json().catch(function () { return null; });
     });
+  }
+
+  function submitCallbackRequest(payload) {
+    var text =
+      "📞 <b>Novi poziv za pozivanje (sajt)</b>\n" +
+      "Ime: " + escapeHtml(payload.name) + "\n" +
+      "Telefon: " + escapeHtml(payload.phone);
+
+    return sendTelegramMessage(text);
   }
 
   /* ---------------------------------------------------------
@@ -926,27 +950,19 @@
     });
   }
 
-  /**
-   * [PLACEHOLDER] Integracija sa CRM / Telegram botom za B2B upite.
-   * Trenutno nema backend endpoint-a — zameniti WEBHOOK_URL
-   * i ukloniti simulirani resolve() kada webhook bude spreman.
-   */
   function submitWholesaleRequest(payload) {
-    var WEBHOOK_URL = ""; // [PLACEHOLDER] npr. https://api.skingard.rs/leads/veleprodaja
+    var text =
+      "🔧 <b>Novi veleprodajni upit</b>\n" +
+      "Studio: " + escapeHtml(payload.company) + "\n" +
+      "Kontakt osoba: " + escapeHtml(payload.contact) + "\n" +
+      "Telefon: " + escapeHtml(payload.phone) + "\n" +
+      (payload.email ? "Email: " + escapeHtml(payload.email) + "\n" : "") +
+      "Grad: " + escapeHtml(payload.city) + "\n" +
+      (payload.volume ? "Očekivane količine: " + escapeHtml(payload.volume) + "\n" : "") +
+      (payload.channels && payload.channels.length ? "Preferirani kontakt: " + escapeHtml(payload.channels.join(", ")) + "\n" : "") +
+      (payload.message ? "Poruka: " + escapeHtml(payload.message) : "");
 
-    if (!WEBHOOK_URL) {
-      console.info("[SKINGARD] Wholesale lead (webhook nije podešen):", payload);
-      return Promise.resolve();
-    }
-
-    return fetch(WEBHOOK_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    }).then(function (res) {
-      if (!res.ok) throw new Error("Bad response");
-      return res.json().catch(function () { return null; });
-    });
+    return sendTelegramMessage(text.trim());
   }
 
   /* ---------------------------------------------------------
