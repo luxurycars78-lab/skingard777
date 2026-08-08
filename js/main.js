@@ -809,7 +809,7 @@
      3) wrangler secret put TELEGRAM_CHAT_ID
      4) Upiši dobijeni *.workers.dev URL ispod u TELEGRAM_PROXY_URL.
   --------------------------------------------------------- */
-  var TELEGRAM_PROXY_URL = ""; // [PLACEHOLDER] npr. "https://skingard-telegram-proxy.<subdomain>.workers.dev"
+  var TELEGRAM_PROXY_URL = "https://skingard-telegram-proxy.luxurycars78.workers.dev";
 
   function escapeHtml(value) {
     return String(value == null ? "" : value)
