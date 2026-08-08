@@ -1054,13 +1054,15 @@
   /* ---------------------------------------------------------
      Cookie consent banner + Google Consent Mode v2.
 
-     Gate is real, not cosmetic: the <head> of every page sets
-     analytics_storage/ad_storage/ad_user_data/ad_personalization to
-     "denied" by default BEFORE the GTM snippet loads. This function only
-     flips that state to "granted" once the visitor actively accepts —
-     GTM/GA4/Ads tags configured to respect Consent Mode stay limited
-     until then. Choice is remembered in localStorage so the banner does
-     not resurface on later visits.
+     Gate is real, not cosmetic: the <head> of every page reads this same
+     localStorage key SYNCHRONOUSLY (before dataLayer even exists) and
+     seeds gtag('consent','default', ...) with "granted"/"denied"
+     accordingly, before the GTM snippet loads — so returning visitors get
+     the right state from the very first tag fire instead of waiting on
+     this deferred script. This function only handles the interactive
+     side: showing the banner on first visit and sending
+     gtag('consent','update', ...) the moment the visitor actually makes
+     a choice, then persisting it to localStorage for next time.
   --------------------------------------------------------- */
   function initCookieConsent() {
     var STORAGE_KEY = "skingard_cookie_consent"; // 'granted' | 'denied'

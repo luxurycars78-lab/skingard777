@@ -4,15 +4,23 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 
-<!-- Consent Mode v2 — default state (denied) BEFORE GTM loads -->
+<!-- Consent Mode v2 — default state BEFORE GTM loads. Reads any previously
+     saved choice (see initCookieConsent() in js/main.js) synchronously so
+     returning visitors who already accepted get "granted" from the very
+     first tag fire, instead of racing the deferred main.js. -->
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){ dataLayer.push(arguments); }
+  var skgConsent = 'denied';
+  try {
+    if (localStorage.getItem('skingard_cookie_consent') === 'granted') skgConsent = 'granted';
+  } catch (e) {}
   gtag('consent', 'default', {
-    'analytics_storage': 'denied',
-    'ad_storage': 'denied',
-    'ad_user_data': 'denied',
-    'ad_personalization': 'denied'
+    'analytics_storage': skgConsent,
+    'ad_storage': skgConsent,
+    'ad_user_data': skgConsent,
+    'ad_personalization': skgConsent,
+    'wait_for_update': 500
   });
 </script>
 
