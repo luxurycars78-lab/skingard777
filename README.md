@@ -77,8 +77,8 @@ Pretraži projekat po `PLACEHOLDER` (Ctrl+Shift+F) — sve što treba popuniti j
   `.map-embed` bloka u svakom HTML fajlu) da tačka na mapi prikazuje organizaciju umesto same adrese.
 - **Radno vreme** — popunjeno: Pon–Sub 10:00–19:00, poseta samo po prethodnom zakazivanju
   (kontakt sekcija na sve 3 stranice + JSON-LD `openingHoursSpecification`)
-- **Cene paketa** — popunjeno u EUR: Prednji paket od 1.200€ / 1.350€ / 1.500€ (malo/srednje/veliko vozilo),
-  Full Body od 3.000€ / 3.300€ / 3.500€, Satin/Color change od 3.200€ / 3.500€ / 3.800€
+- **Cene paketa** — popunjeno u EUR: Prednji paket od 800€ / 850€ / 900€ (malo/srednje/veliko vozilo),
+  Full Body (gloss/satin) od 2.500€ / 2.700€ / 3.000€, Color change od 2.800€ / 3.000€ / 3.200€
   (sekcija `#cene` + kalkulator `PRICE_MATRIX` u `js/main.js` + statična cena na `folija-u-boji.html`)
 - **Uslovi i trajanje garancije** — sekcija `#garancija`
 - **Trajanje ugradnje po paketu** — sekcija `#proces`, FAQ

@@ -468,19 +468,19 @@
   var PRICE_MATRIX = {
     "series-c": {
       "Malo/kompaktno vozilo": {
-        "Prednji paket": { min: "1.200€" },
-        "Full Body": { min: "3.000€" },
-        "Satin / Color change": { min: "3.200€" }
+        "Prednji paket": { min: "800€" },
+        "Full Body": { min: "2.500€" },
+        "Color change": { min: "2.800€" }
       },
       "Srednje vozilo (sedan/SUV)": {
-        "Prednji paket": { min: "1.350€" },
-        "Full Body": { min: "3.300€" },
-        "Satin / Color change": { min: "3.500€" }
+        "Prednji paket": { min: "850€" },
+        "Full Body": { min: "2.700€" },
+        "Color change": { min: "3.000€" }
       },
       "Veliko/premium vozilo": {
-        "Prednji paket": { min: "1.500€" },
-        "Full Body": { min: "3.500€" },
-        "Satin / Color change": { min: "3.800€" }
+        "Prednji paket": { min: "900€" },
+        "Full Body": { min: "3.000€" },
+        "Color change": { min: "3.200€" }
       }
     },
     "color-ppf": {

@@ -1502,6 +1502,15 @@ body.video-lightbox-open { overflow: hidden; }
   border-radius: 999px;
 }
 .price-card h3 { font-size: 19px; }
+.price-finish {
+  font-family: var(--font-head);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--skg-magenta-2);
+  margin-top: -8px;
+}
 .price-desc { font-size: 14px; color: var(--skg-silver); min-height: 44px; }
 .price-tag { font-family: var(--font-head); font-size: 15px; color: var(--skg-silver); }
 .price-tag strong { color: var(--skg-magenta-2); font-size: 17px; }
