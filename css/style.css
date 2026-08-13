@@ -1715,7 +1715,8 @@ body.video-lightbox-open { overflow: hidden; }
 .field input:focus,
 .field select:focus,
 .field textarea:focus { outline: none; border-color: var(--skg-magenta-2); }
-.field input:invalid[data-touched] { border-color: #ff5c5c; }
+.field input:invalid[data-touched],
+.field select:invalid[data-touched] { border-color: #ff5c5c; }
 .field .field-optional { color: var(--skg-silver-dim); font-weight: 400; }
 .field-error { color: #ff5c5c; font-size: 12px; min-height: 14px; }
 .hp-field { position: absolute; left: -9999px; opacity: 0; height: 0; width: 0; }

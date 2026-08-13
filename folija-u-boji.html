@@ -1798,6 +1798,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <small class="field-error" data-error-for="cb-phone"></small>
           </label>
 
+          <label class="field">
+            <span>Marka i model automobila</span>
+            <input type="text" name="car" id="cb-car" autocomplete="off" required minlength="2" placeholder="npr. BMW X5, 2021" />
+            <small class="field-error" data-error-for="cb-car"></small>
+          </label>
+
+          <label class="field">
+            <span>Izabrana usluga</span>
+            <select name="service" id="cb-service" required>
+              <option value="Oklapanje prednjeg dela">Oklapanje prednjeg dela</option>
+              <option value="Oklapanje kompletne karoserije">Oklapanje kompletne karoserije</option>
+              <option value="Folija u boji (Color PPF)" selected>Folija u boji (Color PPF)</option>
+            </select>
+            <small class="field-error" data-error-for="cb-service"></small>
+          </label>
+
           <input type="text" name="company" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true" />
 
           <button type="submit" class="btn btn-primary btn-block">Pozovite me</button>

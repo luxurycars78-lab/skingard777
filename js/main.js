@@ -735,23 +735,35 @@
 
     var nameInput = document.getElementById("cb-name");
     var phoneInput = document.getElementById("cb-phone");
+    var carInput = document.getElementById("cb-car");
+    var serviceInput = document.getElementById("cb-service");
     var statusEl = form.querySelector("[data-form-status]");
     var submitBtn = form.querySelector('button[type="submit"]');
 
-    [nameInput, phoneInput].forEach(function (input) {
+    [nameInput, phoneInput, carInput, serviceInput].forEach(function (input) {
+      if (!input) return;
       input.addEventListener("blur", function () { input.setAttribute("data-touched", "true"); });
     });
+    if (serviceInput) {
+      serviceInput.addEventListener("change", function () { serviceInput.setAttribute("data-touched", "true"); });
+    }
 
     form.addEventListener("submit", function (e) {
       e.preventDefault();
 
       nameInput.setAttribute("data-touched", "true");
       phoneInput.setAttribute("data-touched", "true");
+      if (carInput) carInput.setAttribute("data-touched", "true");
+      if (serviceInput) serviceInput.setAttribute("data-touched", "true");
 
       var nameError = form.querySelector('[data-error-for="cb-name"]');
       var phoneError = form.querySelector('[data-error-for="cb-phone"]');
+      var carError = form.querySelector('[data-error-for="cb-car"]');
+      var serviceError = form.querySelector('[data-error-for="cb-service"]');
       nameError.textContent = "";
       phoneError.textContent = "";
+      if (carError) carError.textContent = "";
+      if (serviceError) serviceError.textContent = "";
 
       var valid = true;
 
@@ -764,6 +776,18 @@
       var phonePattern = /^[+0-9 ]{6,20}$/;
       if (!phoneVal || !phonePattern.test(phoneVal)) {
         phoneError.textContent = "Unesite ispravan broj telefona.";
+        valid = false;
+      }
+
+      var carVal = carInput ? carInput.value.trim() : "";
+      if (carInput && (!carVal || carVal.length < 2)) {
+        carError.textContent = "Unesite marku i model automobila.";
+        valid = false;
+      }
+
+      var serviceVal = serviceInput ? serviceInput.value : "";
+      if (serviceInput && !serviceVal) {
+        serviceError.textContent = "Izaberite uslugu.";
         valid = false;
       }
 
@@ -781,12 +805,14 @@
 
       pushDataLayerEvent({ event: "form_submit", form_id: "callback-form" });
 
-      submitCallbackRequest({ name: nameInput.value.trim(), phone: phoneVal })
+      submitCallbackRequest({ name: nameInput.value.trim(), phone: phoneVal, car: carVal, service: serviceVal })
         .then(function () {
           statusEl.textContent = "Hvala! Pozivamo vas u najkraćem roku.";
           form.reset();
           nameInput.removeAttribute("data-touched");
           phoneInput.removeAttribute("data-touched");
+          if (carInput) carInput.removeAttribute("data-touched");
+          if (serviceInput) serviceInput.removeAttribute("data-touched");
         })
         .catch(function () {
           statusEl.textContent = "Greška pri slanju. Pozovite nas direktno na +381 65 3704426.";
@@ -839,7 +865,9 @@
     var text =
       "📞 <b>Novi poziv za pozivanje (sajt)</b>\n" +
       "Ime: " + escapeHtml(payload.name) + "\n" +
-      "Telefon: " + escapeHtml(payload.phone);
+      "Telefon: " + escapeHtml(payload.phone) + "\n" +
+      "Automobil: " + escapeHtml(payload.car) + "\n" +
+      "Usluga: " + escapeHtml(payload.service);
 
     return sendTelegramMessage(text);
   }
