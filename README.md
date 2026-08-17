@@ -66,7 +66,7 @@ delovi sajta.
 
 Pretraži projekat po `PLACEHOLDER` (Ctrl+Shift+F) — sve što treba popuniti je obeleženo:
 
-- **Telefon** — popunjeno: `+381 65 3704426` (header, sticky CTA, kontakt sekcija, JSON-LD).
+- **Telefon** — popunjeno: `+381 11 4250198` (header, sticky CTA, kontakt sekcija, JSON-LD).
   Isti broj se koristi i za Viber (`viber://chat?number=%2B381653704426`) i WhatsApp
   (`wa.me/381653704426`, `WHATSAPP_NUMBER` u `js/main.js`)
 - **Instagram** — popunjeno: `https://www.instagram.com/skingardfilms` (footer, kontakt sekcija, JSON-LD `sameAs`)

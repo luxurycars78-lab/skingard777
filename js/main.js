@@ -815,7 +815,7 @@
           if (serviceInput) serviceInput.removeAttribute("data-touched");
         })
         .catch(function () {
-          statusEl.textContent = "Greška pri slanju. Pozovite nas direktno na +381 65 3704426.";
+          statusEl.textContent = "Greška pri slanju. Pozovite nas direktno na +381 11 4250198.";
         })
         .finally(function () {
           submitBtn.disabled = false;
@@ -971,7 +971,7 @@
           });
         })
         .catch(function () {
-          statusEl.textContent = "Greška pri slanju. Pošaljite upit direktno na +381 65 3704426.";
+          statusEl.textContent = "Greška pri slanju. Pošaljite upit direktno na +381 11 4250198.";
         })
         .finally(function () {
           submitBtn.disabled = false;
