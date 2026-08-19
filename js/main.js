@@ -550,12 +550,17 @@
       if (priceMinEl) priceMinEl.textContent = range ? range.min : "—";
       if (scopeEl) scopeEl.textContent = findPackageScope(state.pkg);
 
+      var firstResult = resultBox.hidden;
       resultBox.hidden = false;
 
       var message = "Zdravo, zanima me SKINGARD paket \u201c" + state.pkg + "\u201d za vozilo klase \u201c" + state.vehicleClass + "\u201d. Molim vas okvirnu cenu i slobodne termine.";
       if (ctaEl) ctaEl.setAttribute("href", "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(message));
 
-      pushDataLayerEvent({ event: "calc_completed", calc_class: state.vehicleClass, calc_package: state.pkg });
+      // Conversion only when the user first reaches a real price, not on
+      // intermediate chip clicks or later package/class tweaks.
+      if (firstResult && range) {
+        pushDataLayerEvent({ event: "calc_completed", calc_class: state.vehicleClass, calc_package: state.pkg });
+      }
     }
   }
 
@@ -715,10 +720,9 @@
   }
 
   /* ---------------------------------------------------------
-     Callback form: front-end validation + optimistic UX.
-     Real CRM/Telegram-bot integration hooks into
-     submitCallbackRequest() below — swap the fetch() target
-     once the webhook URL is available.
+     Callback form: front-end validation, then Telegram via
+     submitCallbackRequest(). Conversion event fires only after
+     the proxy confirms a successful send — not on submit click.
   --------------------------------------------------------- */
   function initCallbackForm() {
     var form = document.getElementById("callback-form");
@@ -794,10 +798,9 @@
       submitBtn.disabled = true;
       statusEl.textContent = "Slanje...";
 
-      pushDataLayerEvent({ event: "form_submit", form_id: "callback-form" });
-
       submitCallbackRequest({ name: nameInput.value.trim(), phone: phoneVal, car: carVal, service: serviceVal })
         .then(function () {
+          pushDataLayerEvent({ event: "form_submit", form_id: "callback-form" });
           statusEl.textContent = "Hvala! Pozivamo vas u najkraćem roku.";
           form.reset();
           nameInput.removeAttribute("data-touched");
@@ -849,6 +852,9 @@
     }).then(function (res) {
       if (!res.ok) throw new Error("Telegram proxy error");
       return res.json().catch(function () { return null; });
+    }).then(function (data) {
+      if (data && data.ok === false) throw new Error("Telegram proxy error");
+      return data;
     });
   }
 
@@ -938,8 +944,6 @@
       submitBtn.disabled = true;
       statusEl.textContent = "Slanje...";
 
-      pushDataLayerEvent({ event: "form_submit", form_id: "wholesale-form" });
-
       var preferredChannels = Array.from(form.querySelectorAll('input[name="channel"]:checked')).map(function (cb) {
         return cb.value;
       });
@@ -955,6 +959,7 @@
         message: document.getElementById("wf-message") ? document.getElementById("wf-message").value.trim() : "",
       })
         .then(function () {
+          pushDataLayerEvent({ event: "form_submit", form_id: "wholesale-form" });
           statusEl.textContent = "Hvala! Javljamo se u najkraćem roku sa veleprodajnom ponudom.";
           form.reset();
           form.querySelectorAll("[data-touched]").forEach(function (input) {
