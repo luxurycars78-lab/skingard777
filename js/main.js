@@ -482,18 +482,9 @@
         "Full Body": { min: "3.000€" },
         "Color change": { min: "3.200€" }
       }
-    },
-    "color-ppf": {
-      "Malo/kompaktno vozilo": {
-        "Full Body": { min: "2.800€" }
-      },
-      "Srednje vozilo (sedan/SUV)": {
-        "Full Body": { min: "3.500€" }
-      },
-      "Veliko/premium vozilo": {
-        "Full Body": { min: "3.800€" }
-      }
     }
+    // "color-ppf" matrix (folija-u-boji.html) removed along with that page's
+    // .calc-box markup — the static price-card there is the only price shown.
   };
 
   function findPackageScope(pkgName) {
