@@ -485,7 +485,7 @@
     },
     "color-ppf": {
       "Malo/kompaktno vozilo": {
-        "Full Body": { min: "3.200€" }
+        "Full Body": { min: "2.800€" }
       },
       "Srednje vozilo (sedan/SUV)": {
         "Full Body": { min: "3.500€" }
