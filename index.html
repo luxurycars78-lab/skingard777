@@ -53,7 +53,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800;900&amp;family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet" />
 
-<link rel="preload" as="image" href="assets/hood-sequence/frame-001.webp" fetchpriority="high" />
+<link rel="preload" as="image" href="assets/video/hero-hood-poster.webp" fetchpriority="high" />
 
 <link rel="stylesheet" href="css/style.css" />
 
@@ -214,30 +214,27 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <main id="glavni-sadrzaj">
 
-  <!-- ===================== HERO + INTRO SCROLL ANIMACIJA ===================== -->
-  <section id="hero" class="intro-pin-wrap" aria-label="Uvodna animacija — nanošenje SKINGARD folije">
-    <div class="intro-stage">
+  <!-- ===================== HERO — tekst levo, snimak ugradnje desno ===================== -->
+  <section id="hero" class="hero-split" aria-label="SKINGARD — zaštita, promena boje i PPF folija">
+    <div class="hero-split-bg" aria-hidden="true"></div>
 
-      <div class="intro-bg" aria-hidden="true"></div>
-
-      <div class="hero-copy" data-intro-layer="hero">
+    <div class="container hero-split-inner">
+      <div class="hero-copy">
         <p class="eyebrow">SKINGARD Premium Detejling</p>
         <h1>SKINGARD — <span class="text-accent">zaštita, promena boje i profesionalna PPF folija</span> za tvoj auto ili tvoj studio.</h1>
         <p class="hero-lead">Izaberi šta ti treba.</p>
-        <p class="scroll-cue"><span>Skroluj da vidiš kako štitimo</span><i></i></p>
       </div>
 
-      <div class="film-visual" data-intro-layer="visual" aria-hidden="true">
-        <div class="film-frame">
-          <canvas class="film-canvas" data-film-canvas width="440" height="782"></canvas>
-          <img
-            class="film-poster"
-            data-film-poster
-            src="assets/hood-sequence/frame-070.webp"
-            alt="Ugradnja SKINGARD PPF folije — zavlačenje pod ivicu haube"
-            width="440" height="782"
-            loading="eager"
-            decoding="async" />
+      <div class="hero-media">
+        <div class="hero-media-frame">
+          <video
+            class="hero-media-el"
+            data-hero-video
+            src="assets/video/hero-hood.mp4"
+            poster="assets/video/hero-hood-poster.webp"
+            width="720" height="1280"
+            autoplay muted loop playsinline preload="auto"
+            aria-label="Ugradnja SKINGARD PPF folije — zavlačenje pod ivicu haube"></video>
         </div>
 
         <p class="visual-caption">
@@ -245,20 +242,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           Folija se zavlači <strong>pod ivicu haube</strong> — nema otvorenih rubova koji prvi otpadaju.
         </p>
       </div>
-
-      <div class="intro-blackout" data-intro-layer="blackout" aria-hidden="true"></div>
-
-      <div class="intro-logo" data-intro-layer="logo" aria-hidden="true">
-        <div class="intro-logo-row">
-          <svg class="intro-mark" viewBox="0 0 64 48">
-            <polyline points="30,6 10,24 30,42" fill="none" stroke="#B8B8B8" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-            <polyline points="52,6 32,24 52,42" fill="none" stroke="#B8B8B8" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <span class="intro-wordmark">SKINGARD</span>
-        </div>
-        <span class="intro-tagline">Paint Protection Film</span>
-      </div>
-
     </div>
   </section>
 
@@ -1111,8 +1094,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/ScrollTrigger.min.js"></script>
 <script src="js/main.js" defer></script>
 
 <!-- ===================== COOKIE CONSENT ===================== -->

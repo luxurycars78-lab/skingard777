@@ -1,31 +1,23 @@
 /**
  * SKINGARD — landing interactions
- * 1) GSAP/ScrollTrigger intro sequence (hood wrap animation -> logo reveal)
- * 2) Header / sticky CTA chrome (visible from page load, independent of intro)
+ * 1) Header / sticky CTA chrome
+ * 2) Hero install clip (autoplaying, muted loop)
  * 3) Mobile nav, reveal-on-scroll, before/after slider,
  *    pricing chips, callback form validation
  *
- * Respects prefers-reduced-motion and falls back gracefully if GSAP
- * failed to load (e.g. offline dev) or on lower-powered devices.
+ * Respects prefers-reduced-motion throughout.
  */
 (function () {
   "use strict";
 
   var prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var isLowPower = window.matchMedia("(max-width: 640px)").matches &&
-    (navigator.hardwareConcurrency ? navigator.hardwareConcurrency <= 4 : false);
-  var gsapAvailable = typeof window.gsap !== "undefined" && typeof window.ScrollTrigger !== "undefined";
 
   document.addEventListener("DOMContentLoaded", function () {
-    // Header / sticky CTA are shown from the very first frame — the GSAP
-    // hood-sequence intro below is a purely visual scroll sequence, it no
-    // longer gates navigation. Otherwise, on a ~460vh intro, visitors have
-    // to scroll ~4-5 screens before the nav (incl. cross-page links like
-    // "Obojeni PPF") even exists in the DOM's visible/interactive state.
     toggleChrome(true);
 
     initFooterYear();
     initMobileNav();
+    initHeroVideo();
     initRevealOnScroll();
     initBeforeAfterSliders();
     initVideoBlocks();
@@ -38,30 +30,17 @@
     initConversionTracking();
     initCookieConsent();
 
-    // On weaker/low-power mobile devices we skip the scrubbed GSAP intro
-    // entirely and fall back to the same static CSS state used for
-    // prefers-reduced-motion (see .no-intro-anim rules in style.css) —
-    // a real "CSS-only" fallback, not just a lighter animation.
-    if (gsapAvailable && !prefersReducedMotion && !isLowPower) {
-      initIntroAnimation();
-    } else {
-      document.documentElement.classList.add("no-intro-anim");
-      toggleChrome(true);
-    }
-
     initHashScrollFix();
   });
 
   /* ---------------------------------------------------------
      Cross-page anchor links (e.g. "index.html#garancija" from
-     garantni-uslovi.html) land on the wrong spot: the browser
-     jumps to the #hash target against the pre-JS layout, then
-     GSAP ScrollTrigger pins the intro section and inserts a huge
-     spacer (280-380% of viewport height) above everything else,
-     shifting the real target far down the page. We re-run the
-     jump-to-anchor after that pin (and any late image/font
-     layout) has settled, forcing an instant (non-smooth) scroll
-     so it still feels like a normal anchor landing.
+     garantni-uslovi.html) can land slightly off: the browser
+     jumps to the #hash target against the pre-JS layout, before
+     late images and web fonts have settled and shifted it. We
+     re-run the jump once that has finished, forcing an instant
+     (non-smooth) scroll so it still feels like a normal anchor
+     landing.
   --------------------------------------------------------- */
   function initHashScrollFix() {
     if (!window.location.hash) return;
@@ -92,7 +71,7 @@
   }
 
   /* ---------------------------------------------------------
-     Header + sticky CTA chrome (shown once intro is done)
+     Header + sticky CTA chrome
   --------------------------------------------------------- */
   function toggleChrome(visible) {
     var header = document.querySelector(".site-header");
@@ -102,128 +81,18 @@
   }
 
   /* ---------------------------------------------------------
-     Intro scroll animation (GSAP + ScrollTrigger)
+     Hero install clip — real footage of a SKINGARD install, muted
+     and looping so it plays without any scroll or click.
 
-     The hood-corner sequence is real footage of a SKINGARD install
-     (assets/hood-sequence/frame-001..100.webp, extracted @10fps from a
-     10s clip), scrubbed frame-by-frame against scroll progress via
-     <canvas> — the same "image sequence" technique used for product-
-     reveal scroll sites. Frames are preloaded eagerly (unlike the
-     below-the-fold portfolio images) because this sequence is the
-     first thing the user scrolls into, right after the hero copy.
+     The autoplay attribute can't be media-queried, so honouring
+     prefers-reduced-motion has to happen here: drop the attribute
+     and pause, leaving the poster frame as a still image.
   --------------------------------------------------------- */
-  var FRAME_COUNT = 100;
-  var FRAME_PATH = function (i) {
-    return "assets/hood-sequence/frame-" + String(i + 1).padStart(3, "0") + ".webp";
-  };
-
-  function initIntroAnimation() {
-    var introWrap = document.querySelector(".intro-pin-wrap");
-    var canvas = document.querySelector("[data-film-canvas]");
-    if (!introWrap || !canvas) return;
-
-    var heroCopy = document.querySelector('[data-intro-layer="hero"]');
-    var filmVisual = document.querySelector('[data-intro-layer="visual"]');
-    var blackout = document.querySelector('[data-intro-layer="blackout"]');
-    var logo = document.querySelector('[data-intro-layer="logo"]');
-    var visualCaption = document.querySelector(".visual-caption");
-    var ctx = canvas.getContext("2d");
-
-    var frames = [];
-    var framesLoaded = [];
-    var currentFrame = 0;
-
-    function sizeCanvas() {
-      var rect = canvas.getBoundingClientRect();
-      var dpr = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = Math.max(1, Math.round(rect.width * dpr));
-      canvas.height = Math.max(1, Math.round(rect.height * dpr));
-    }
-
-    function nearestLoadedFrame(idx) {
-      for (var i = Math.max(0, Math.min(idx, FRAME_COUNT - 1)); i >= 0; i--) {
-        if (framesLoaded[i]) return i;
-      }
-      return -1;
-    }
-
-    function drawFrame(idx) {
-      currentFrame = idx;
-      var found = nearestLoadedFrame(Math.round(idx));
-      if (found === -1 || !canvas.width) return;
-      ctx.drawImage(frames[found], 0, 0, canvas.width, canvas.height);
-    }
-
-    function preloadFrames() {
-      for (var i = 0; i < FRAME_COUNT; i++) {
-        var img = new Image();
-        img.decoding = "async";
-        if (i === 0 && "fetchPriority" in img) img.fetchPriority = "high";
-        img.onload = (function (idx) {
-          return function () {
-            framesLoaded[idx] = true;
-            if (idx === 0) drawFrame(0);
-          };
-        })(i);
-        img.src = FRAME_PATH(i);
-        frames.push(img);
-      }
-    }
-
-    sizeCanvas();
-    preloadFrames();
-
-    var resizeTimer;
-    window.addEventListener("resize", function () {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(function () {
-        sizeCanvas();
-        drawFrame(currentFrame);
-      }, 150);
-    });
-
-    gsap.registerPlugin(ScrollTrigger);
-
-    gsap.set(filmVisual, { opacity: 0 });
-    gsap.set(blackout, { opacity: 0 });
-    gsap.set(logo, { opacity: 0, scale: 0.92 });
-    gsap.set(visualCaption, { opacity: 0 });
-
-    var frameProxy = { i: 0 };
-
-    var isNarrow = window.matchMedia("(max-width: 720px)").matches;
-    var tl = gsap.timeline({
-      defaults: { ease: "none" },
-      scrollTrigger: {
-        trigger: introWrap,
-        start: "top top",
-        // Pin the stage and scrub through the hood sequence → brand card.
-        // Mobile gets a shorter distance so the sequence doesn't feel endless.
-        end: isNarrow ? "+=280%" : "+=380%",
-        scrub: 0.4,
-        pin: true,
-        anticipatePin: 1,
-      },
-    });
-
-    tl.to(heroCopy, { opacity: 0, y: -40, duration: 1 }, 0)
-      .to(filmVisual, { opacity: 1, duration: 0.6 }, 0.55)
-      .to(visualCaption, { opacity: 1, duration: 0.4 }, 0.9)
-      .to(frameProxy, {
-        i: FRAME_COUNT - 1,
-        duration: 3.1,
-        onUpdate: function () { drawFrame(frameProxy.i); },
-      }, 0.9)
-      .to(filmVisual, { opacity: 0, duration: 0.5 }, 4.0)
-      .to(blackout, { opacity: 1, duration: 0.6 }, 3.75)
-      .fromTo(logo, { opacity: 0, scale: 0.92 }, { opacity: 1, scale: 1, duration: 0.8, ease: "power2.out" }, 4.5)
-      .to(logo, { opacity: 1, duration: 0.6 }, 5.3)
-      // Hold: logo sits alone on a fully black screen from ~5.9 to 6.6 (no
-      // tweens run here) before it dissolves back to black — the "brand
-      // title card" beat — and only once the screen is black again does the
-      // pin release and the next section (trust bar) scroll into view.
-      .to(logo, { opacity: 0, duration: 0.5 }, 6.6)
-      .to(blackout, { opacity: 0, duration: 0.6 }, 6.7);
+  function initHeroVideo() {
+    var video = document.querySelector("[data-hero-video]");
+    if (!video || !prefersReducedMotion) return;
+    video.removeAttribute("autoplay");
+    video.pause();
   }
 
   /* ---------------------------------------------------------

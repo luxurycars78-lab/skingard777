@@ -1,7 +1,7 @@
 {
   "name": "skingard-landing",
   "version": "1.0.0",
-  "description": "SKINGARD Paint Protection Film — jednostranični premium landing sa GSAP/ScrollTrigger intro animacijom (Beograd, Srbija)",
+  "description": "SKINGARD Paint Protection Film — jednostranični premium landing (Beograd, Srbija)",
   "private": true,
   "scripts": {
     "dev": "npx --yes serve . -l 5173",
@@ -11,6 +11,6 @@
   },
   "dependencies": {},
   "notes": {
-    "gsap": "Učitan preko jsDelivr CDN-a, pinovana verzija 3.15.0 (vidi index.html <script> tagove). Nema npm build koraka — čist HTML/CSS/JS."
+    "build": "Nema npm build koraka — čist HTML/CSS/JS, bez frontend zavisnosti."
   }
 }

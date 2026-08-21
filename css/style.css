@@ -219,10 +219,9 @@ section[id] { scroll-margin-top: 88px; }
 }
 
 .brand { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-/* Wordmark treatment shared by header/intro/footer — bold italic lean to
+/* Wordmark treatment shared by header/footer — bold italic lean to
    match the provided SKINGARD logo art (pink wordmark, tight tracking). */
 .brand-word,
-.intro-wordmark,
 .footer-brand span {
   color: var(--skg-magenta);
   font-style: italic;
@@ -299,36 +298,78 @@ section[id] { scroll-margin-top: 88px; }
 }
 
 /* =========================================================
-   HERO / INTRO SCROLL ANIMATION
+   HERO — copy on the left, autoplaying install clip on the right
    ========================================================= */
-.intro-pin-wrap {
+.hero-split {
   position: relative;
-  /* Viewport-tall stage; GSAP ScrollTrigger pin adds the scroll room
-     (see initIntroAnimation). Do NOT put overflow-x on html/body ancestors
-     in a way that breaks pinning — sticky was previously killed by
-     overflow-x: clip on <html>. */
-  height: 100vh;
+  /* Top padding clears the fixed 72px header the same way .simple-hero does. */
+  padding: 148px 0 72px;
   background: var(--skg-black);
-}
-
-.intro-stage {
-  position: relative;
-  height: 100vh;
-  width: 100%;
   overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
-.intro-bg {
+.hero-split-bg {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse 70% 55% at 50% 8%, rgba(241,136,176,0.16), transparent 60%),
-    radial-gradient(ellipse 60% 50% at 85% 90%, rgba(251,118,165,0.10), transparent 60%),
-    var(--skg-black);
+    radial-gradient(ellipse 70% 55% at 20% 8%, rgba(241,136,176,0.16), transparent 60%),
+    radial-gradient(ellipse 60% 50% at 90% 90%, rgba(251,118,165,0.10), transparent 60%);
   z-index: 0;
+  pointer-events: none;
+}
+
+.hero-split-inner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: clamp(32px, 5vw, 72px);
+  align-items: center;
+}
+
+/* .hero-copy is shared with .simple-hero on the subpages, where it stays
+   centred — inside the split hero it fills its own column and reads left. */
+.hero-split .hero-copy {
+  max-width: none;
+  padding: 0;
+  text-align: left;
+}
+/* Narrower column than the old full-width hero, so the display size has to
+   come down or the headline breaks into a tower of short lines. */
+.hero-split .hero-copy h1 { font-size: clamp(30px, 3.6vw, 48px); }
+.hero-split .hero-lead { margin-left: 0; margin-right: 0; }
+
+.hero-media {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hero-media-frame {
+  position: relative;
+  width: min(100%, 340px);
+  aspect-ratio: 720 / 1280;
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 30px 80px -20px rgba(0,0,0,0.65), 0 0 0 1px rgba(255,255,255,0.09);
+  background: var(--skg-black-2);
+}
+
+.hero-media-el {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+@media (max-width: 900px) {
+  .hero-split { padding: 124px 0 56px; }
+  .hero-split-inner { grid-template-columns: 1fr; gap: 36px; }
+  .hero-split .hero-copy { text-align: center; }
+  .hero-split .hero-lead { margin-left: auto; margin-right: auto; }
+  .hero-media-frame { width: min(64vw, 290px); }
 }
 
 .hero-copy {
@@ -375,79 +416,6 @@ section[id] { scroll-margin-top: 88px; }
   margin: 0 auto 32px;
 }
 
-.scroll-cue {
-  margin-top: 56px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  color: var(--skg-silver-dim);
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-.scroll-cue i {
-  width: 1px;
-  height: 34px;
-  background: linear-gradient(180deg, var(--skg-magenta-2), transparent);
-  position: relative;
-  overflow: hidden;
-}
-.scroll-cue i::after {
-  content: "";
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 10px;
-  background: var(--skg-white);
-  animation: scrollCueMove 1.8s ease-in-out infinite;
-}
-@keyframes scrollCueMove {
-  0% { transform: translateY(-10px); opacity: 0; }
-  40% { opacity: 1; }
-  100% { transform: translateY(34px); opacity: 0; }
-}
-
-.film-visual {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  will-change: opacity;
-  padding: 0 20px;
-}
-
-.film-frame {
-  position: relative;
-  width: min(52vw, 320px);
-  aspect-ratio: 440 / 782;
-  border-radius: 22px;
-  overflow: hidden;
-  box-shadow: 0 30px 80px -20px rgba(0,0,0,0.65), 0 0 0 1px rgba(255,255,255,0.09);
-  background: var(--skg-black-2);
-}
-@media (max-width: 720px) {
-  .film-frame { width: min(64vw, 290px); }
-}
-
-.film-canvas,
-.film-poster {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-/* Canvas drives the scroll-scrubbed sequence; the <img> is only the static
-   fallback shown when the animated layer is skipped (see reduced-motion /
-   .no-intro-anim rules below), so it stays hidden otherwise. */
-.film-poster { display: none; }
-
 .visual-caption {
   margin-top: 28px;
   max-width: 560px;
@@ -465,103 +433,11 @@ section[id] { scroll-margin-top: 88px; }
 }
 .visual-caption em { color: var(--skg-silver-dim); font-size: 12px; }
 
-.intro-blackout {
-  position: absolute;
-  inset: 0;
-  /* Brand topo-line pattern behind the reveal; a center vignette dims the
-     art's own baked-in wordmark so it doesn't double up with the live
-     .intro-logo text that animates on top of it. */
-  background-image:
-    radial-gradient(ellipse 46% 34% at 50% 50%, rgba(10,10,11,0.97) 0%, rgba(10,10,11,0.88) 55%, rgba(10,10,11,0) 78%),
-    linear-gradient(rgba(10,10,11,0.3), rgba(10,10,11,0.3)),
-    url("../assets/brand/skingard-logo-pattern.png");
-  background-position: center, center, center;
-  background-repeat: no-repeat, no-repeat, no-repeat;
-  background-size: auto, auto, cover;
-  background-color: var(--skg-black);
-  opacity: 0;
-  z-index: 4;
-  will-change: opacity;
-  /* Purely decorative fade layer — must never intercept clicks on the
-     hero CTA buttons underneath it (z-index 3), even while opacity is 0
-     and the element still fully covers the viewport. */
-  pointer-events: none;
-}
-
-.intro-logo {
-  position: absolute;
-  z-index: 5;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  opacity: 0;
-  transform: scale(0.92);
-  will-change: opacity, transform;
-  pointer-events: none;
-}
-.intro-logo-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.intro-mark {
-  width: clamp(30px, 6vw, 46px);
-  height: auto;
-  flex-shrink: 0;
-}
-.intro-wordmark {
-  font-family: var(--font-head);
-  font-size: clamp(26px, 5vw, 40px);
-  font-weight: 800;
-  letter-spacing: -0.005em;
-}
-.intro-tagline {
-  font-size: 13px;
-  color: var(--skg-magenta-2);
-  letter-spacing: 0.1em;
-  font-weight: 500;
-}
-
-/* Reduced motion / low-power mobile: show static end-state, skip scrubbed
-   animation entirely (true CSS-only fallback, no GSAP timeline runs). */
-@media (prefers-reduced-motion: reduce) {
-  .intro-pin-wrap { height: auto; }
-  .intro-stage {
-    position: relative;
-    height: auto;
-    min-height: 100vh;
-    flex-direction: column;
-    gap: 40px;
-    padding: 120px 20px 64px;
-  }
-  .hero-copy { opacity: 1; }
-  .film-visual { position: relative; inset: auto; opacity: 1; z-index: 1; }
-  .film-canvas { display: none; }
-  .film-poster { display: block; }
-  .intro-blackout, .intro-logo { display: none; }
-}
-html.no-intro-anim .intro-pin-wrap { height: auto; }
-html.no-intro-anim .intro-stage {
-  position: relative;
-  height: auto;
-  min-height: 100vh;
-  flex-direction: column;
-  gap: 40px;
-  padding: 120px 20px 64px;
-}
-html.no-intro-anim .hero-copy { opacity: 1; }
-html.no-intro-anim .film-visual { position: relative; inset: auto; opacity: 1; z-index: 1; }
-html.no-intro-anim .film-canvas { display: none; }
-html.no-intro-anim .film-poster { display: block; }
-html.no-intro-anim .intro-blackout,
-html.no-intro-anim .intro-logo { display: none; }
-
 /* =========================================================
-   Simple hero (subpages without the GSAP hood-sequence intro,
-   e.g. folija-u-boji.html) — reuses .hero-copy/.eyebrow/.hero-sub/
+   Simple hero (subpages without the hero clip, e.g.
+   folija-u-boji.html) — reuses .hero-copy/.eyebrow/.hero-sub/
    .hero-cta-row, just needs top clearance under the fixed header
-   plus a lightweight background instead of the pinned canvas stage.
+   plus a lightweight background.
    ========================================================= */
 .simple-hero {
   padding-top: 168px;
