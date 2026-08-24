@@ -162,6 +162,12 @@ n.queue=[];t=b.createElement(e);t.async=!0;
 t.src=v;s=b.getElementsByTagName(e)[0];
 s.parentNode.insertBefore(t,s)}(window, document,'script',
 'https://connect.facebook.net/en_US/fbevents.js');
+// Same localStorage gate as Consent Mode v2 above: until the visitor accepts,
+// the pixel holds events instead of sending them. js/main.js grants/revokes
+// the moment a choice is made.
+try {
+  if (localStorage.getItem('skingard_cookie_consent') !== 'granted') fbq('consent', 'revoke');
+} catch (e) { fbq('consent', 'revoke'); }
 fbq('init', '1990975591557007');
 fbq('track', 'PageView');
 </script>

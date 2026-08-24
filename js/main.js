@@ -926,6 +926,30 @@
   function pushDataLayerEvent(payload) {
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push(payload);
+    trackMetaEvent(payload);
+  }
+
+  /* dataLayer event -> Meta Pixel event. Mirroring the map here keeps every
+     fbq() call in one place instead of scattered next to each conversion, and
+     guarantees GTM and Meta never drift apart on what counts as a conversion.
+     Do NOT also fire these events from a Meta tag inside GTM — that doubles
+     every conversion. */
+  var META_EVENT_MAP = {
+    form_submit: { track: "track", name: "Lead" },
+    whatsapp_click: { track: "track", name: "Contact" },
+    viber_click: { track: "track", name: "Contact" },
+    phone_click: { track: "track", name: "Contact" },
+    calc_completed: { track: "trackCustom", name: "CalcCompleted" },
+  };
+
+  function trackMetaEvent(payload) {
+    if (typeof window.fbq !== "function" || !payload || !payload.event) return;
+    var mapped = META_EVENT_MAP[payload.event];
+    if (!mapped) return;
+
+    var params = { content_name: payload.form_id || payload.calc_package || payload.event };
+    if (payload.calc_class) params.content_category = payload.calc_class;
+    window.fbq(mapped.track, mapped.name, params);
   }
 
   function initConversionTracking() {
@@ -982,6 +1006,12 @@
         ad_user_data: value,
         ad_personalization: value,
       });
+      // Meta Pixel ignores Google Consent Mode, so it needs its own signal.
+      // The <head> snippet already revoked it for anyone without a stored
+      // "granted"; granting here releases the PageView it queued.
+      if (typeof window.fbq === "function") {
+        window.fbq("consent", value === "granted" ? "grant" : "revoke");
+      }
       if (persist !== false) {
         try {
           localStorage.setItem(STORAGE_KEY, status);
