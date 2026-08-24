@@ -130,13 +130,49 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </main>
 
 <footer class="site-footer">
+  <div class="container footer-inner">
+    <nav class="footer-nav" aria-label="Footer navigacija">
+      <a href="index.html">Početna</a>
+      <a href="politika-privatnosti.html">Politika privatnosti</a>
+      <button type="button" data-cookie-settings>Podešavanja kolačića</button>
+    </nav>
+  </div>
   <div class="container footer-legal">
     <p>© <span data-year></span> SKINGARD FILMS DOO BEOGRAD. Sva prava zadržana. MB: 22211315 · PIB: 115763992</p>
   </div>
 </footer>
 
-<script>
-  document.querySelector("[data-year]").textContent = new Date().getFullYear();
-</script>
+<script src="js/main.js" defer></script>
+
+<!-- ===================== COOKIE CONSENT ===================== -->
+<div class="cookie-banner" id="cookieBanner" role="dialog" aria-live="polite">
+  <div class="cookie-banner__text">
+    Koristimo kolačiće da bismo poboljšali vaše iskustvo na sajtu i merili efikasnost oglasa. Detalje možete pročitati u
+    <a href="/politika-privatnosti.html">Politici privatnosti</a>.
+  </div>
+  <div class="cookie-banner__actions">
+    <button type="button" class="btn btn-ghost" id="cookieDecline">Odbij</button>
+    <button type="button" class="btn btn-ghost" id="cookieSettings">Podešavanja</button>
+    <button type="button" class="btn btn-primary" id="cookieAccept">Prihvati sve</button>
+  </div>
+</div>
+
+<div class="cookie-modal" id="cookieModal" hidden>
+  <div class="cookie-modal__box">
+    <h3>Podešavanja kolačića</h3>
+    <label class="cookie-modal__row">
+      <input type="checkbox" checked disabled>
+      Neophodni kolačići (uvek aktivni — sajt ne radi bez njih)
+    </label>
+    <label class="cookie-modal__row">
+      <input type="checkbox" id="cookieAnalytics" checked>
+      Analitika i merenje oglasa (GTM, Google Ads, Meta)
+    </label>
+    <div class="cookie-modal__actions">
+      <button type="button" class="btn btn-ghost" id="cookieModalClose">Otkaži</button>
+      <button type="button" class="btn btn-primary" id="cookieModalSave">Sačuvaj izbor</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>

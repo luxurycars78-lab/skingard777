@@ -985,7 +985,9 @@
     var STORAGE_KEY = "skingard_cookie_consent"; // 'granted' | 'denied'
     var banner = document.getElementById("cookieBanner");
     var modal = document.getElementById("cookieModal");
-    if (!banner) return;
+    // The modal alone is enough to run: a page may ship only the footer
+    // re-opener for visitors who already made a choice.
+    if (!banner && !modal) return;
 
     var analyticsCheckbox = document.getElementById("cookieAnalytics");
     var saved = null;
@@ -1020,11 +1022,11 @@
     }
 
     function hideBanner() {
-      banner.style.display = "none";
+      if (banner) banner.style.display = "none";
     }
 
     function showBanner() {
-      banner.style.display = "flex";
+      if (banner) banner.style.display = "flex";
     }
 
     function openModal() {
@@ -1074,6 +1076,13 @@
     if (settingsBtn) {
       settingsBtn.addEventListener("click", openModal);
     }
+
+    // Footer re-opener: the banner's own "Podešavanja" button disappears with
+    // the banner once a choice is made, so withdrawing consent later needs a
+    // permanent entry point — which the privacy policy promises.
+    document.querySelectorAll("[data-cookie-settings]").forEach(function (trigger) {
+      trigger.addEventListener("click", openModal);
+    });
 
     if (modalCloseBtn) {
       modalCloseBtn.addEventListener("click", closeModal);
