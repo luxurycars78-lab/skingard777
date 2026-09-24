@@ -394,6 +394,10 @@ section[id] { scroll-margin-top: 88px; }
   margin-bottom: 18px;
 }
 
+.hero-split .eyebrow { color: var(--skg-white); }
+.hero-split .hero-copy h1 .text-accent,
+.hero-router-section h2 .text-accent { font-style: normal; }
+
 .hero-copy h1 {
   font-size: clamp(32px, 6vw, 62px);
   margin-bottom: 20px;
