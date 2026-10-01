@@ -4,6 +4,99 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 
+<!-- Consent Mode v2 before GTM. Legacy "granted"/"denied" still work.
+     Current value is JSON {a:analytics, m:marketing}. -->
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+  window.__skgConsent = { a: 0, m: 0 };
+  try {
+    var skgRaw = localStorage.getItem('skingard_cookie_consent');
+    if (skgRaw === 'granted') window.__skgConsent = { a: 1, m: 1 };
+    else if (skgRaw === 'denied') window.__skgConsent = { a: 0, m: 0 };
+    else if (skgRaw && skgRaw.charAt(0) === '{') {
+      var skgParsed = JSON.parse(skgRaw);
+      window.__skgConsent = { a: skgParsed.a ? 1 : 0, m: skgParsed.m ? 1 : 0 };
+    }
+  } catch (e) {}
+  gtag('consent', 'default', {
+    'analytics_storage': window.__skgConsent.a ? 'granted' : 'denied',
+    'ad_storage': window.__skgConsent.m ? 'granted' : 'denied',
+    'ad_user_data': window.__skgConsent.m ? 'granted' : 'denied',
+    'ad_personalization': window.__skgConsent.m ? 'granted' : 'denied',
+    'functionality_storage': 'granted',
+    'security_storage': 'granted',
+    'wait_for_update': 500
+  });
+  gtag('set', 'ads_data_redaction', true);
+  gtag('set', 'url_passthrough', true);
+</script>
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-PPXSKXP3');</script>
+<!-- End Google Tag Manager -->
+<!-- Meta Pixel 1990975591557007. PageView only after marketing consent.
+     Guard drops the other pixel and duplicate events injected by GTM. -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){
+if(window.__skgPixel&&window.__skgPixel.guard&&window.__skgPixel.guard(arguments))return;
+if(!n.callMethod&&arguments[0]==='consent'&&arguments[1]==='grant'){
+n.queue=(n.queue||[]).filter(function(q){return !(q&&q[0]==='consent'&&q[1]==='revoke');});
+return;}
+n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+window.__skgPixel={
+id:'1990975591557007',
+pageViewSent:false,
+allowPageView:false,
+seen:{},
+guard:function(args){
+var cmd=args[0],eventName=null,params={};
+if(cmd==='init')return String(args[1])!==this.id;
+if(cmd==='track'||cmd==='trackCustom'){eventName=args[1];params=args[2]||{};}
+else if(cmd==='trackSingle'||cmd==='trackSingleCustom'){
+if(String(args[1])!==this.id)return true;
+eventName=args[2];params=args[3]||{};
+}
+if(!eventName)return false;
+if(typeof params!=='object'||params===null)params={};
+if(eventName==='PageView'&&(cmd==='track'||cmd==='trackSingle')){
+if(!this.allowPageView||this.pageViewSent)return true;
+this.pageViewSent=true;return false;
+}
+if(eventName==='Lead'&&(params.content_name==='form_submit'||params.content_name==='calc_completed'))return true;
+var key=eventName+'|'+(params.content_name||'');
+var now=Date.now();
+if(this.seen[key]&&now-this.seen[key]<500)return true;
+this.seen[key]=now;
+return false;
+},
+sendPageView:function(){
+if(this.pageViewSent||typeof window.fbq!=='function')return;
+this.allowPageView=true;
+window.fbq('track','PageView');
+this.allowPageView=false;
+}
+};
+fbq.disablePushState=true;
+try{if(!window.__skgConsent||!window.__skgConsent.m)fbq('consent','revoke');}
+catch(e){fbq('consent','revoke');}
+fbq('set','autoConfig',false,'1990975591557007');
+fbq('init','1990975591557007');
+if(window.__skgConsent&&window.__skgConsent.m)window.__skgPixel.sendPageView();
+</script>
+<!-- End Meta Pixel Code -->
+
+
 <title>Garantni uslovi — SKINGARD</title>
 <meta name="description" content="Garantni uslovi za poliuretansku foliju SKINGARD — PPF, ULTRA, MATTE, SATIN. Trajanje garancije 8 godina, uslovi pokrića i preporuke za održavanje." />
 <meta name="robots" content="index, follow" />
@@ -19,56 +112,7 @@
 
 <link rel="stylesheet" href="css/style.css" />
 
-<!-- Consent Mode v2 — default state BEFORE GTM loads. Reads any previously
-     saved choice (see initCookieConsent() in js/main.js) synchronously so
-     returning visitors who already accepted get "granted" from the very
-     first tag fire, instead of racing the deferred main.js. -->
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){ dataLayer.push(arguments); }
-  var skgConsent = 'denied';
-  try {
-    if (localStorage.getItem('skingard_cookie_consent') === 'granted') skgConsent = 'granted';
-  } catch (e) {}
-  gtag('consent', 'default', {
-    'analytics_storage': skgConsent,
-    'ad_storage': skgConsent,
-    'ad_user_data': skgConsent,
-    'ad_personalization': skgConsent,
-    'wait_for_update': 500
-  });
-</script>
 
-<!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-PPXSKXP3');</script>
-<!-- End Google Tag Manager -->
-<!-- Meta Pixel Code -->
-<script>
-!function(f,b,e,v,n,t,s)
-{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];
-s.parentNode.insertBefore(t,s)}(window, document,'script',
-'https://connect.facebook.net/en_US/fbevents.js');
-// Same localStorage gate as Consent Mode v2 above: until the visitor accepts,
-// the pixel holds events instead of sending them. js/main.js grants/revokes
-// the moment a choice is made.
-try {
-  if (localStorage.getItem('skingard_cookie_consent') !== 'granted') fbq('consent', 'revoke');
-} catch (e) { fbq('consent', 'revoke'); }
-fbq('init', '1990975591557007');
-fbq('track', 'PageView');
-</script>
-<noscript><img height="1" width="1" style="display:none"
-src="https://www.facebook.com/tr?id=1990975591557007&ev=PageView&noscript=1"
-/></noscript>
-<!-- End Meta Pixel Code -->
 </head>
 <body class="legal-page">
 
@@ -166,8 +210,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       Neophodni kolačići (uvek aktivni — sajt ne radi bez njih)
     </label>
     <label class="cookie-modal__row">
-      <input type="checkbox" id="cookieAnalytics" checked>
-      Analitika i merenje oglasa (GTM, Google Ads, Meta)
+      <input type="checkbox" id="cookieAnalytics">
+      Analitika (merenje posećenosti)
+    </label>
+    <label class="cookie-modal__row">
+      <input type="checkbox" id="cookieMarketing">
+      Marketing (Google Ads, Meta)
     </label>
     <div class="cookie-modal__actions">
       <button type="button" class="btn btn-ghost" id="cookieModalClose">Otkaži</button>

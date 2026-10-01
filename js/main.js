@@ -15,23 +15,32 @@
   document.addEventListener("DOMContentLoaded", function () {
     toggleChrome(true);
 
-    initFooterYear();
-    initMobileNav();
-    initHeroVideo();
-    initRevealOnScroll();
-    initBeforeAfterSliders();
-    initVideoBlocks();
-    initPricingCalculator();
-    initColorPaletteFilter();
-    initPaletteLightbox();
-    initCallbackForm();
-    initWholesaleForm();
-    initStickyCtaOverlapGuard();
-    initConversionTracking();
-    initCookieConsent();
-
-    initHashScrollFix();
+    // Consent first. A throw in a later init must not leave the banner
+    // dead and the pixel revoked for the rest of the visit.
+    safeInit(initCookieConsent);
+    safeInit(initFooterYear);
+    safeInit(initMobileNav);
+    safeInit(initHeroVideo);
+    safeInit(initRevealOnScroll);
+    safeInit(initBeforeAfterSliders);
+    safeInit(initVideoBlocks);
+    safeInit(initPricingCalculator);
+    safeInit(initColorPaletteFilter);
+    safeInit(initPaletteLightbox);
+    safeInit(initCallbackForm);
+    safeInit(initWholesaleForm);
+    safeInit(initStickyCtaOverlapGuard);
+    safeInit(initConversionTracking);
+    safeInit(initHashScrollFix);
   });
+
+  function safeInit(fn) {
+    try {
+      fn();
+    } catch (err) {
+      console.error("[SKINGARD]", err);
+    }
+  }
 
   /* ---------------------------------------------------------
      Cross-page anchor links (e.g. "index.html#garancija" from
@@ -90,9 +99,22 @@
   --------------------------------------------------------- */
   function initHeroVideo() {
     var video = document.querySelector("[data-hero-video]");
-    if (!video || !prefersReducedMotion) return;
+    if (!video) return;
+    // HTML keeps preload=none and no autoplay so the 1.2MB clip does not
+    // compete with fbevents.js on the first load. Poster stays visible.
     video.removeAttribute("autoplay");
-    video.pause();
+    video.preload = "none";
+    if (prefersReducedMotion) {
+      video.pause();
+      return;
+    }
+    function start() {
+      video.preload = "auto";
+      var pending = video.play();
+      if (pending && typeof pending.catch === "function") pending.catch(function () {});
+    }
+    if (document.readyState === "complete") start();
+    else window.addEventListener("load", start, { once: true });
   }
 
   /* ---------------------------------------------------------
@@ -942,6 +964,8 @@
     calc_completed: { track: "trackCustom", name: "CalcCompleted" },
   };
 
+  var META_PIXEL_ID = "1990975591557007";
+
   function trackMetaEvent(payload) {
     if (typeof window.fbq !== "function" || !payload || !payload.event) return;
     var mapped = META_EVENT_MAP[payload.event];
@@ -949,7 +973,18 @@
 
     var params = { content_name: payload.form_id || payload.calc_package || payload.event };
     if (payload.calc_class) params.content_category = payload.calc_class;
-    window.fbq(mapped.track, mapped.name, params);
+
+    // trackSingle so a second pixel initialized elsewhere cannot receive
+    // these events. eventID lets Meta dedupe if the same Lead is echoed.
+    var options = {};
+    if (mapped.name === "Lead") {
+      options.eventID = "lead." + Date.now().toString(36) + "." + Math.random().toString(36).slice(2, 8);
+    }
+    if (mapped.track === "trackCustom") {
+      window.fbq("trackSingleCustom", META_PIXEL_ID, mapped.name, params, options);
+    } else {
+      window.fbq("trackSingle", META_PIXEL_ID, mapped.name, params, options);
+    }
   }
 
   function initConversionTracking() {
@@ -972,51 +1007,51 @@
      Cookie consent banner + Google Consent Mode v2.
 
      Gate is real, not cosmetic: the <head> of every page reads this same
-     localStorage key SYNCHRONOUSLY (before dataLayer even exists) and
-     seeds gtag('consent','default', ...) with "granted"/"denied"
-     accordingly, before the GTM snippet loads — so returning visitors get
-     the right state from the very first tag fire instead of waiting on
-     this deferred script. This function only handles the interactive
-     side: showing the banner on first visit and sending
-     gtag('consent','update', ...) the moment the visitor actually makes
-     a choice, then persisting it to localStorage for next time.
+     localStorage key synchronously and seeds Consent Mode before GTM.
+     Analytics (analytics_storage) and marketing (ad_* + Meta Pixel) are
+     separate. Legacy "granted" means both, "denied" means neither.
+     Meta PageView is sent once, only when marketing is on — from <head>
+     for a returning visitor, or from here the moment they accept.
   --------------------------------------------------------- */
   function initCookieConsent() {
-    var STORAGE_KEY = "skingard_cookie_consent"; // 'granted' | 'denied'
+    var STORAGE_KEY = "skingard_cookie_consent";
     var banner = document.getElementById("cookieBanner");
     var modal = document.getElementById("cookieModal");
-    // The modal alone is enough to run: a page may ship only the footer
-    // re-opener for visitors who already made a choice.
     if (!banner && !modal) return;
 
     var analyticsCheckbox = document.getElementById("cookieAnalytics");
+    var marketingCheckbox = document.getElementById("cookieMarketing");
     var saved = null;
     try {
-      saved = localStorage.getItem(STORAGE_KEY);
+      saved = readStoredConsent(localStorage.getItem(STORAGE_KEY));
     } catch (e) {
-      // localStorage unavailable (e.g. private mode edge cases) — banner
-      // will simply show again next visit instead of throwing.
+      // localStorage unavailable — banner shows again next visit.
     }
 
-    function applyConsent(status, persist) {
+    function gtag() {
       window.dataLayer = window.dataLayer || [];
-      function gtag() { dataLayer.push(arguments); }
-      var value = status === "granted" ? "granted" : "denied";
+      window.dataLayer.push(arguments);
+    }
+
+    function applyConsent(state, persist) {
       gtag("consent", "update", {
-        analytics_storage: value,
-        ad_storage: value,
-        ad_user_data: value,
-        ad_personalization: value,
+        analytics_storage: state.a ? "granted" : "denied",
+        ad_storage: state.m ? "granted" : "denied",
+        ad_user_data: state.m ? "granted" : "denied",
+        ad_personalization: state.m ? "granted" : "denied",
       });
-      // Meta Pixel ignores Google Consent Mode, so it needs its own signal.
-      // The <head> snippet already revoked it for anyone without a stored
-      // "granted"; granting here releases the PageView it queued.
+      // Meta ignores Google Consent Mode. Grant releases the queue and
+      // then we fire exactly one PageView (the head snippet does not
+      // queue one while marketing is still denied).
       if (typeof window.fbq === "function") {
-        window.fbq("consent", value === "granted" ? "grant" : "revoke");
+        window.fbq("consent", state.m ? "grant" : "revoke");
+        if (state.m && window.__skgPixel && typeof window.__skgPixel.sendPageView === "function") {
+          window.__skgPixel.sendPageView();
+        }
       }
       if (persist !== false) {
         try {
-          localStorage.setItem(STORAGE_KEY, status);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify({ a: state.a ? 1 : 0, m: state.m ? 1 : 0 }));
         } catch (e) {}
       }
     }
@@ -1031,7 +1066,8 @@
 
     function openModal() {
       if (!modal) return;
-      if (analyticsCheckbox) analyticsCheckbox.checked = saved !== "denied";
+      if (analyticsCheckbox) analyticsCheckbox.checked = !!(saved && saved.a);
+      if (marketingCheckbox) marketingCheckbox.checked = !!(saved && saved.m);
       modal.hidden = false;
     }
 
@@ -1039,12 +1075,7 @@
       if (modal) modal.hidden = true;
     }
 
-    if (saved === "granted" || saved === "denied") {
-      // Reassert the stored choice as an explicit consent update on every
-      // page load (not just a hidden banner) — the <head> default already
-      // seeds the right state before GTM loads, but this is a belt-and-
-      // braces re-send per Google's guidance so tags never end up stuck
-      // on "denied" if a page's inline default block is ever missed.
+    if (saved) {
       applyConsent(saved, false);
       hideBanner();
     } else {
@@ -1059,16 +1090,16 @@
 
     if (acceptBtn) {
       acceptBtn.addEventListener("click", function () {
-        saved = "granted";
-        applyConsent("granted");
+        saved = { a: 1, m: 1 };
+        applyConsent(saved);
         hideBanner();
       });
     }
 
     if (declineBtn) {
       declineBtn.addEventListener("click", function () {
-        saved = "denied";
-        applyConsent("denied");
+        saved = { a: 0, m: 0 };
+        applyConsent(saved);
         hideBanner();
       });
     }
@@ -1077,9 +1108,6 @@
       settingsBtn.addEventListener("click", openModal);
     }
 
-    // Footer re-opener: the banner's own "Podešavanja" button disappears with
-    // the banner once a choice is made, so withdrawing consent later needs a
-    // permanent entry point — which the privacy policy promises.
     document.querySelectorAll("[data-cookie-settings]").forEach(function (trigger) {
       trigger.addEventListener("click", openModal);
     });
@@ -1099,12 +1127,28 @@
 
     if (modalSaveBtn) {
       modalSaveBtn.addEventListener("click", function () {
-        var analyticsOn = analyticsCheckbox ? analyticsCheckbox.checked : false;
-        saved = analyticsOn ? "granted" : "denied";
+        saved = {
+          a: analyticsCheckbox && analyticsCheckbox.checked ? 1 : 0,
+          m: marketingCheckbox && marketingCheckbox.checked ? 1 : 0,
+        };
         applyConsent(saved);
         closeModal();
         hideBanner();
       });
+    }
+  }
+
+  // Legacy "granted" / "denied" stay valid so existing choices are not reset.
+  // New writes are {"a":0|1,"m":0|1} — analytics and marketing are separate.
+  function readStoredConsent(raw) {
+    if (raw === "granted") return { a: 1, m: 1 };
+    if (raw === "denied") return { a: 0, m: 0 };
+    if (!raw || raw.charAt(0) !== "{") return null;
+    try {
+      var parsed = JSON.parse(raw);
+      return { a: parsed.a ? 1 : 0, m: parsed.m ? 1 : 0 };
+    } catch (e) {
+      return null;
     }
   }
 
