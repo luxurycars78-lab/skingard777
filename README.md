@@ -66,11 +66,11 @@ delovi sajta.
 
 Pretraži projekat po `PLACEHOLDER` (Ctrl+Shift+F) — sve što treba popuniti je obeleženo:
 
-- **Telefon** — popunjeno: `+381 11 4250198` (header, sticky CTA, kontakt sekcija, JSON-LD).
+- **Telefon** — popunjeno: `+381 65 3704426` (header, sticky CTA, kontakt sekcija, JSON-LD).
   Isti broj se koristi i za Viber (`viber://chat?number=%2B381653704426`) i WhatsApp
   (`wa.me/381653704426`, `WHATSAPP_NUMBER` u `js/main.js`)
 - **Instagram** — popunjeno: `https://www.instagram.com/skingardfilms` (footer, kontakt sekcija, JSON-LD `sameAs`)
-- **Adresa studija** — popunjeno: `Ljutice Bogdana 42, Beograd` (kontakt sekcija na sve 3 stranice +
+- **Adresa studija** — popunjeno: `Lošinjska 11b, Beograd` (kontakt sekcija na sve 3 stranice +
   JSON-LD `address`/`geo` + Google Maps embed i klikabilni link ka Google Maps). Mapa trenutno
   pinuje adresu preko generičkog `?q=` upita — kad SKINGARD studio bude registrovan kao organizacija
   na Google Business/Maps, zameniti taj upit imenom/linkom organizacije (obeleženo `[TODO]` iznad
@@ -172,6 +172,6 @@ je i dalje kraća na mobilnom (260vh naspram 380vh) za uređaje koji ipak pokre�
 ## Poznata ograničenja / sledeći korak
 
 - Forma za povratni poziv nema pravi backend — pogledati `submitCallbackRequest()` u `js/main.js`.
-- Google Maps iframe koristi upit sa tačnom adresom (`Ljutice Bogdana 42, Beograd`); zameniti
+- Google Maps iframe koristi upit sa tačnom adresom (`Lošinjska 11b, Beograd`); zameniti
   organizacijom kad bude registrovana na Google Business/Maps.
 - Sve slike/video su CSS placeholderi — nema fabrikovanih "stock" fotografija automobila.
