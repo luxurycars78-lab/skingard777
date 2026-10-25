@@ -66,9 +66,9 @@ delovi sajta.
 
 Pretraži projekat po `PLACEHOLDER` (Ctrl+Shift+F) — sve što treba popuniti je obeleženo:
 
-- **Telefon** — popunjeno: `+381 65 3704426` (header, sticky CTA, kontakt sekcija, JSON-LD).
-  Isti broj se koristi i za Viber (`viber://chat?number=%2B381653704426`) i WhatsApp
-  (`wa.me/381653704426`, `WHATSAPP_NUMBER` u `js/main.js`)
+- **Telefon** — popunjeno: `+381 64 5672222` (header, sticky CTA, kontakt sekcija, JSON-LD).
+  Viber (`viber://chat?number=%2B381653704426`) i WhatsApp
+  (`wa.me/381653704426`, `WHATSAPP_NUMBER` u `js/main.js`) ostaju na `+381 65 3704426`
 - **Instagram** — popunjeno: `https://www.instagram.com/skingardfilms` (footer, kontakt sekcija, JSON-LD `sameAs`)
 - **Adresa studija** — popunjeno: `Lošinjska 11b, Beograd` (kontakt sekcija na sve 3 stranice +
   JSON-LD `address`/`geo` + Google Maps embed i klikabilni link ka Google Maps). Mapa trenutno
